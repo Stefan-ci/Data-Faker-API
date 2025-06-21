@@ -38,6 +38,7 @@ class OrderGenerator(BaseDataGenerator):
                 "customer": self.fake.name(),
                 "total": total,
                 "date": order_date.isoformat(),
+                "address": self.fake.address(),
                 "order_items": order_items,
             })
         

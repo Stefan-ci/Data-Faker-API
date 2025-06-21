@@ -1,5 +1,6 @@
 from datetime import date
-from api.base import CustomBaseModel
+from pydantic import Field
+from api.base import CustomBaseModel, CustomPaginationBaseModel
 
 class MedicalDataModel(CustomBaseModel):
     sex: str
@@ -9,3 +10,8 @@ class MedicalDataModel(CustomBaseModel):
     birth_date: date
     ssn: str
     allergies: str
+
+
+class MedicalDataPaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated medical data list """
+    results: list[MedicalDataModel] = Field(default_factory=list)

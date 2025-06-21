@@ -1,5 +1,6 @@
 from datetime import date
-from api.base import CustomBaseModel
+from pydantic import Field
+from api.base import CustomBaseModel, CustomPaginationBaseModel
 
 class EmployeeModel(CustomBaseModel):
     first_name: str
@@ -10,3 +11,8 @@ class EmployeeModel(CustomBaseModel):
     hire_date: date
     department: str
     salary: float
+
+
+class EmployeePaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated employee list """
+    results: list[EmployeeModel] = Field(default_factory=list)

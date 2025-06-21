@@ -10,6 +10,7 @@ class UserGenerator(BaseDataGenerator):
                 "first_name": self.fake.first_name(),
                 "last_name": self.fake.last_name(),
                 "email": self.fake.email(),
+                "username": self.fake.user_name(),
                 "phone_number": self.fake.phone_number(),
                 "birth_date": self.fake.date_of_birth(minimum_age=0, maximum_age=90).isoformat(),
                 "sex": self.fake.random_element([sex.value for sex in SexChoices]),
@@ -18,6 +19,10 @@ class UserGenerator(BaseDataGenerator):
                 "city": self.fake.city(),
                 "country": self.fake.country(),
                 "date_joined": self.fake.date_time().isoformat(),
+                "last_login": self.fake.date_time().isoformat(),
+                "is_active": self.fake.boolean(),
+                "is_staff": self.fake.boolean(),
+                "is_superuser": self.fake.boolean(),
             }
             for i in range(1, n + 1)
         ]

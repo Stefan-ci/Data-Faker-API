@@ -1,6 +1,6 @@
 from pydantic import Field
 from datetime import datetime
-from api.base import CustomBaseModel
+from api.base import CustomBaseModel, CustomPaginationBaseModel
 
 class ProductModel(CustomBaseModel):
     name: str
@@ -14,3 +14,8 @@ class ProductModel(CustomBaseModel):
     rating: float
     reviews_count: int
     created_at: datetime
+
+
+class ProductPaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated product list """
+    results: list[ProductModel] = Field(default_factory=list)

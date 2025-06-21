@@ -1,15 +1,15 @@
-from typing import Optional, List
+from typing import Optional
 from fastapi import  Query, Request, APIRouter, HTTPException
 
-from api.users.models import UserModel
 from api.users.utils import generate_users_data
 from api.base import StateKeywords, AppStateAccessor
+from api.users.models import UserModel, UserPaginationResponse
 
 
 class UserApiView:
     def __init__(self):
         self.router = APIRouter(prefix="/users", tags=["Users"])
-        self.router.add_api_route("/", self.list_users, response_model=List[UserModel], methods=["GET"], summary="List users")
+        self.router.add_api_route("/", self.list_users, response_model=UserPaginationResponse, methods=["GET"], summary="List users")
         self.router.add_api_route("/{user_id}", self.get_user, response_model=UserModel, methods=["GET"], summary="Get single user")
         self.router.add_api_route("/regenerate", self.regenerate_users, methods=["POST"], summary="Regenerate users (overwrite the existing ones)")
     
@@ -21,16 +21,36 @@ class UserApiView:
     async def list_users(
             self,
             request: Request,
-            city: Optional[str] = Query(None),
-            length: Optional[int] = Query(50, ge=1)
+            length: Optional[int] = Query(50, ge=1),
+            page: Optional[int] = Query(1, ge=1)
         ):
         length = length if length else 50
-        
+        page = page if page else 1
         users = self.get_accessor(request).get_or_generate(key=StateKeywords.USERS, func=generate_users_data, length=length)
+        all_users_length = len(self.get_accessor(request).get(StateKeywords.USERS)) or 0
         
-        if city:
-            users = [u for u in users if u["city"].casefold() == city.casefold()]
-        return users
+        if not users:
+            raise HTTPException(status_code=503, detail="Users data is not initialized.")
+        
+        query_params = dict(request.query_params)
+        filterable_fields = UserModel.get_filterable_fields()
+        
+        # Dynamic filtering based on query parameters
+        for field, value in query_params.items():
+            if field in filterable_fields:
+                users = [u for u in users if str(u.get(field, "")).casefold() == value.casefold()]
+        
+        # Pagination logic
+        start = (page - 1) * length
+        end = start + length
+        users = users[start:end]
+        
+        return UserPaginationResponse(
+            page=page,
+            length=length,
+            total=all_users_length,
+            results=users,
+        )
     
     
     async def get_user(self, user_id: str, request: Request):

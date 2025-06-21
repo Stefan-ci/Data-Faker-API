@@ -1,9 +1,10 @@
 from enum import Enum
 from uuid import UUID
 from faker import Faker
-from typing import Callable
 from pydantic import BaseModel
 from abc import ABC, abstractmethod
+from typing import Callable, ClassVar, Set
+
 
 
 class BaseDataGenerator(ABC):
@@ -68,6 +69,22 @@ class AppStateAccessor:
 class CustomBaseModel(BaseModel):
     id: int
     uuid: UUID
+    
+    # used to exclude fields from search
+    EXCLUDED_FIELDS_ON_SEARCH: ClassVar[Set[str]] = set()
+    
+    @classmethod
+    def get_filterable_fields(cls) -> set[str]:
+        return {
+            name for name in cls.model_fields.keys()
+            if name not in cls.EXCLUDED_FIELDS_ON_SEARCH
+        }
+
+
+class CustomPaginationBaseModel(BaseModel):
+    page: int
+    length: int
+    total: int
 
 
 class SexChoices(Enum):

@@ -1,8 +1,8 @@
 from typing import List
 from pydantic import Field
 from datetime import datetime
-from api.base import CustomBaseModel
 from api.products.models import ProductModel
+from api.base import CustomBaseModel, CustomPaginationBaseModel
 
 class OrderItemModel(CustomBaseModel):
     quantity: int = Field(..., gt=0)
@@ -14,4 +14,10 @@ class OrderModel(CustomBaseModel):
     customer: str
     total: float = Field(..., ge=0)
     date: datetime
+    address: str
     order_items: List[OrderItemModel]
+
+
+class OrderPaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated order list """
+    results: List[OrderModel] = Field(default_factory=list)
