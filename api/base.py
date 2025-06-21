@@ -10,7 +10,8 @@ class BaseDataGenerator(ABC):
     def __init__(self, locale="en_US"):
         self.locale = locale
         # multi-locale doesn't support all methods for now, so use it wisely or simply deactivate it
-        self.fake = Faker(locale=self.locale)
+        # self.fake = Faker(locale=self.locale)
+        self.fake = Faker()
     
     @abstractmethod
     def generate(self, n):
