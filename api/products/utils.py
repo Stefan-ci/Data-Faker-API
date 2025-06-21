@@ -31,5 +31,5 @@ class ProductGenerator(BaseDataGenerator):
 
 
 
-def generate_products_data(length=10, locale="en_US"):
-    return ProductGenerator(locale=locale).generate(n=length)
+def generate_products_data(length=10):
+    return ProductGenerator().generate(n=length)

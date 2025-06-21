@@ -10,8 +10,7 @@ class BaseDataGenerator(ABC):
     def __init__(self, locale="en_US"):
         self.locale = locale
         # multi-locale doesn't support all methods for now, so use it wisely or simply deactivate it
-        # self.fake = Faker(locale=self.locale)
-        self.fake = Faker()
+        self.fake = Faker(locale=self.locale)
     
     @abstractmethod
     def generate(self, n):
@@ -25,7 +24,6 @@ class StateKeywords(Enum):
     MEDICAL = ("medical", "Keyword to medical data of patients in the state")
     PRODUCTS = ("products", "Keyword to store products list in the state")
     ORDERS = ("orders", "Keyword to store orders list in the state")
-    LOCALE_LANG = ("locale", "Keyword to store the default language in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key

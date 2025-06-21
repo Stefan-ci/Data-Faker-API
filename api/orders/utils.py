@@ -46,5 +46,5 @@ class OrderGenerator(BaseDataGenerator):
 
 
 
-def generate_orders_data(length=10, locale="en_US"):
-    return OrderGenerator(locale=locale).generate(n=length)
+def generate_orders_data(length=10):
+    return OrderGenerator().generate(n=length)

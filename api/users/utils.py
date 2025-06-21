@@ -23,5 +23,5 @@ class UserGenerator(BaseDataGenerator):
         ]
 
 
-def generate_users_data(length=10, locale="en_US"):
-    return UserGenerator(locale=locale).generate(n=length)
+def generate_users_data(length=10):
+    return UserGenerator().generate(n=length)

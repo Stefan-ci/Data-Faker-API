@@ -26,9 +26,7 @@ class UserApiView:
         ):
         length = length if length else 50
         
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        users = accessor.get_or_generate(key=StateKeywords.USERS, func=generate_users_data, length=length, locale=locale)
+        users = self.get_accessor(request).get_or_generate(key=StateKeywords.USERS, func=generate_users_data, length=length)
         
         if city:
             users = [u for u in users if u["city"].casefold() == city.casefold()]
@@ -36,9 +34,7 @@ class UserApiView:
     
     
     async def get_user(self, user_id: str, request: Request):
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        users = accessor.get_or_generate(key=StateKeywords.USERS, func=generate_users_data, locale=locale)
+        users = self.get_accessor(request).get_or_generate(key=StateKeywords.USERS, func=generate_users_data)
         
         if not users:
             raise HTTPException(status_code=503, detail="Users data is not initialized.")
@@ -50,7 +46,5 @@ class UserApiView:
     
     
     async def regenerate_users(self, request: Request, length: int = Query(100, ge=1)):
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        accessor.set(key=StateKeywords.USERS, value=generate_users_data(length=length, locale=locale))
+        self.get_accessor(request).set(key=StateKeywords.USERS, value=generate_users_data(length=length))
         return {"message": f"{length} users regenerated."}

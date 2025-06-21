@@ -24,16 +24,12 @@ class ProductApiView:
             length: Optional[int] = Query(50, ge=1)
         ):
         length = length if length else 50
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        products = accessor.get_or_generate(key=StateKeywords.PRODUCTS, func=generate_products_data, length=length, locale=locale)
+        products = self.get_accessor(request).get_or_generate(key=StateKeywords.PRODUCTS, func=generate_products_data, length=length)
         return products
     
     
     async def get_product(self, product_id: str, request: Request):
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        products = accessor.get_or_generate(key=StateKeywords.PRODUCTS, func=generate_products_data, locale=locale)
+        products = self.get_accessor(request).get_or_generate(key=StateKeywords.PRODUCTS, func=generate_products_data)
         
         if not products:
             raise HTTPException(status_code=503, detail="Products data is not initialized.")
@@ -45,7 +41,5 @@ class ProductApiView:
     
     
     async def regenerate_products(self, request: Request, length: int = Query(100, ge=1)):
-        accessor = self.get_accessor(request)
-        locale = accessor.get(StateKeywords.LOCALE_LANG) or "en_US"
-        accessor.set(key=StateKeywords.PRODUCTS, value=generate_products_data(length=length, locale=locale))
+        self.get_accessor(request).set(key=StateKeywords.PRODUCTS, value=generate_products_data(length=length))
         return {"message": f"{length} products regenerated."}

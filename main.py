@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from api.middleware import LocaleMiddleware
-
 # views
 from api.users.views import UserApiView
 from api.orders.views import OrderApiView
@@ -26,10 +24,6 @@ app = FastAPI(
     lifespan=on_startup,
     debug=True
 )
-
-# middlewares
-app.add_middleware(LocaleMiddleware)
-
 
 # Include API routes
 app.include_router(homepage_router)
