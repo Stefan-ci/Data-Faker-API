@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake Data API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <div class="max-w-4xl mx-auto py-10 px-6">
+        <h1 class="text-4xl font-bold mb-4 text-blue-700">🧪 Fake Data API</h1>
+        <p class="text-lg mb-6">Generate fake users, products, and orders for testing purposes.</p>
+
+        <h2 class="text-2xl font-semibold mb-2">Available Endpoints</h2>
+        <ul class="list-disc ml-6 mb-6 space-y-1">
+            <li><code class="bg-gray-200 px-2 py-1 rounded">GET /users/</code> – List fake users</li>
+            <li><code class="bg-gray-200 px-2 py-1 rounded">GET /products/</code> – List fake products</li>
+            <li><code class="bg-gray-200 px-2 py-1 rounded">GET /orders/</code> – List fake orders</li>
+            <li><code class="bg-gray-200 px-2 py-1 rounded">POST /users/regenerate</code> – Regenerate users</li>
+            <li><code class="bg-gray-200 px-2 py-1 rounded">POST /products/regenerate</code> – Regenerate products</li>
+        </ul>
+
+        <h2 class="text-2xl font-semibold mb-2">Locale Support (Disabled due to incompatibility between some methods)</h2>
+        <p class="mb-6">Use <code class="bg-gray-200 px-2 py-1 rounded">?locale=fr_FR</code> or set the <code class="bg-gray-200 px-2 py-1 rounded">Accept-Language</code> header.</p>
+
+        <h2 class="text-2xl font-semibold mb-2">API Documentation</h2>
+        <ul class="list-disc ml-6 space-y-1">
+            <li><a href="/docs" class="text-blue-500 hover:underline">Swagger UI</a></li>
+            <li><a href="/redoc" class="text-blue-500 hover:underline">ReDoc</a></li>
+        </ul>
+    </div>
+</body>
+</html>
