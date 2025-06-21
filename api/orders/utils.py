@@ -1,5 +1,5 @@
 from random import randint, choice
-from api.base import BaseDataGenerator
+from utils.base import BaseDataGenerator
 from datetime import datetime, timedelta
 from api.products.utils import ProductGenerator
 

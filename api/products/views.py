@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import  Query, Request, APIRouter, HTTPException
 
-from api.base import StateKeywords, AppStateAccessor
+from utils.base import StateKeywords, AppStateAccessor
 from api.products.utils import generate_products_data
 from api.products.models import ProductModel, ProductPaginationResponse
 

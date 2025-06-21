@@ -1,4 +1,4 @@
-from api.base import BaseDataGenerator, SexChoices
+from utils.base import BaseDataGenerator, SexChoices
 
 
 class UserGenerator(BaseDataGenerator):

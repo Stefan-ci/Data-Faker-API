@@ -1,6 +1,6 @@
 from datetime import date
 from pydantic import Field
-from api.base import CustomBaseModel, CustomPaginationBaseModel
+from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
 class MedicalDataModel(CustomBaseModel):
     sex: str

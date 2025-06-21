@@ -1,4 +1,4 @@
-from api.base import BaseDataGenerator, SexChoices, AllergiesChoices
+from utils.base import BaseDataGenerator, SexChoices, AllergiesChoices
 
 
 class MedicalGenerator(BaseDataGenerator):

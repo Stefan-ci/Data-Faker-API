@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import  Query, Request, APIRouter, HTTPException
 
 from api.orders.utils import generate_orders_data
-from api.base import StateKeywords, AppStateAccessor
+from utils.base import StateKeywords, AppStateAccessor
 from api.orders.models import OrderModel, OrderPaginationResponse
 
 

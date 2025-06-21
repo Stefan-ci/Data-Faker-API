@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import  Query, Request, APIRouter, HTTPException
 
 from api.medical.utils import generate_medical_data
-from api.base import StateKeywords, AppStateAccessor
+from utils.base import StateKeywords, AppStateAccessor
 from api.medical.models import MedicalDataModel, MedicalDataPaginationResponse
 
 

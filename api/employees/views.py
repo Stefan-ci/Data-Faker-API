@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import  Query, Request, APIRouter, HTTPException
 
-from api.base import StateKeywords, AppStateAccessor
+from utils.base import StateKeywords, AppStateAccessor
 from api.employees.utils import generate_employees_data
 from api.employees.models import EmployeeModel, EmployeePaginationResponse
 

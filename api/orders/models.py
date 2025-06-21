@@ -2,7 +2,7 @@ from typing import List
 from pydantic import Field
 from datetime import datetime
 from api.products.models import ProductModel
-from api.base import CustomBaseModel, CustomPaginationBaseModel
+from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
 class OrderItemModel(CustomBaseModel):
     quantity: int = Field(..., gt=0)

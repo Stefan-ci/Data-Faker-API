@@ -1,6 +1,6 @@
 from pydantic import Field
 from datetime import datetime
-from api.base import CustomBaseModel, CustomPaginationBaseModel
+from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
 class UserModel(CustomBaseModel):
     first_name: str

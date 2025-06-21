@@ -1,4 +1,4 @@
-from api.base import BaseDataGenerator, ProductCategories
+from utils.base import BaseDataGenerator, ProductCategories
 
 
 class ProductGenerator(BaseDataGenerator):

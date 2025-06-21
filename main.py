@@ -7,7 +7,7 @@ from api.orders.views import OrderApiView
 from api.products.views import ProductApiView
 from api.employees.views import EmployeeApiView
 from api.medical.views import MedicalDataApiView
-from api.homepage import router as homepage_router
+from views.homepage import router as homepage_router
 
 
 @asynccontextmanager

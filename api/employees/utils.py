@@ -1,4 +1,4 @@
-from api.base import BaseDataGenerator, DepartmentChoices
+from utils.base import BaseDataGenerator, DepartmentChoices
 
 
 class EmployeeGenerator(BaseDataGenerator):
