@@ -9,7 +9,9 @@
 <body class="bg-gray-100 text-gray-800 font-sans">
     <div class="max-w-4xl mx-auto py-10 px-6">
         <h1 class="text-4xl font-bold mb-4 text-blue-700">🧪 Fake Data API</h1>
-        <p class="text-lg mb-6">Generate fake users, products, and orders for testing purposes.</p>
+        <p class="text-lg mb-6">
+            Generate fake data for testing and prototyping purposes using FastAPI and Faker.
+        </p>
 
         <h2 class="text-2xl font-semibold mb-2">Available Endpoints</h2>
         <ul class="list-disc ml-6 mb-6 space-y-1">
@@ -20,8 +22,23 @@
             <li><code class="bg-gray-200 px-2 py-1 rounded">GET /users/</code> – Fake users</li>
         </ul>
 
-        <h2 class="text-2xl font-semibold mb-2">Locale Support (Disabled due to incompatibility between some methods)</h2>
-        <p class="mb-6">Use <code class="bg-gray-200 px-2 py-1 rounded">?locale=fr_FR</code> or set the <code class="bg-gray-200 px-2 py-1 rounded">Accept-Language</code> header.</p>
+        <h2 class="text-2xl font-semibold mb-2">Data Persistence</h2>
+        <p class="mb-4">
+            This API does <strong>not use any database</strong>. All generated data is stored in FastAPI's application state
+            on first request. Once cached, the same data is reused on subsequent requests unless explicitly regenerated.
+        </p>
+        <p class="mb-4">
+            To force data refresh, use the <code class="bg-gray-200 px-2 py-1 rounded">/regenerate/</code> endpoint on the
+            corresponding resource (e.g., <code class="bg-gray-200 px-2 py-1 rounded">POST /users/regenerate?length=100</code>).
+            You may optionally specify a <code class="bg-gray-200 px-2 py-1 rounded">length</code> query parameter to define how many records to generate.
+        </p>
+
+        <h2 class="text-2xl font-semibold mb-2">Locale Support (Limited)</h2>
+        <p class="mb-6">
+            You can attempt to specify a locale using <code class="bg-gray-200 px-2 py-1 rounded">?locale=fr_FR</code> or
+            the <code class="bg-gray-200 px-2 py-1 rounded">Accept-Language</code> header. However, due to limitations in the
+            Faker library, <strong>multi-locale support is partially broken</strong>. Some methods may raise errors if the selected locale is not fully compatible.
+        </p>
 
         <h2 class="text-2xl font-semibold mb-2">API Documentation</h2>
         <ul class="list-disc ml-6 space-y-1">
