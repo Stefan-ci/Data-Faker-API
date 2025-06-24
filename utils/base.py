@@ -27,7 +27,13 @@ class StateKeywords(Enum):
     ORDERS = ("orders", "Keyword to store orders in the state")
     INCOMES = ("incomes", "Keyword to store incomes in the state")
     EXPENSES = ("expenses", "Keyword to store expenses in the state")
-    CUSTOMERS = ("customers", "Keyword to store customers in the state")
+    PAYMENTS = ("payments", "Keyword to store payments in the state")
+    NOTIFICATIONS = ("notifications", "Keyword to store notifications in the state")
+    ATTENDANCES = ("attendances", "Keyword to store attendances in the state")
+    TODOS = ("todos", "Keyword to store todos in the state")
+    CHATS = ("chats", "Keyword to store chats in the state")
+    ANALYTICS = ("analytics", "Keyword to store analytics in the state")
+    CRYPTOS = ("cryptos", "Keyword to store cryptos in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key
