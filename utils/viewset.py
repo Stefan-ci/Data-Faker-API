@@ -1,5 +1,5 @@
+from typing import Type, Optional
 from abc import ABC, abstractmethod
-from typing import Type, Optional, Callable
 from fastapi import APIRouter, Query, Request, HTTPException
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
@@ -16,10 +16,11 @@ class BaseModelViewSet(ABC):
     verbose_name: str
     verbose_name_plural: str
     endpoint_prefix: str
+    tags: Optional[str] = None
     
     
     def __init__(self):
-        self.router = APIRouter(prefix=self.endpoint_prefix, tags=[self.verbose_name_plural.capitalize()])
+        self.router = APIRouter(prefix=self.endpoint_prefix, tags=[self.tags] if self.tags else [self.verbose_name_plural.capitalize()])
         self.router.add_api_route("/", self.list_view, response_model=self.pagination_model, methods=["GET"], summary=f"List {self.verbose_name_plural.lower()}")
         self.router.add_api_route("/{id_or_uuid}", self.retrieve_view, response_model=self.model, methods=["GET"], summary=f"Retrieve single {self.verbose_name.lower()}")
         self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")

@@ -13,6 +13,7 @@ class CryptoApiView(BaseModelViewSet):
     verbose_name = "crypto"
     verbose_name_plural = "cryptos"
     endpoint_prefix = "/cryptos"
+    tags = "Cryptocurrencies"
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_cryptos_data, length=length)
@@ -28,6 +29,7 @@ class CryptoTransactionApiView(BaseModelViewSet):
     verbose_name = "crypto transaction"
     verbose_name_plural = "crypto transactions"
     endpoint_prefix = "/crypto-transactions"
+    tags = "Cryptocurrencies"
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(
