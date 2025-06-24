@@ -1,11 +1,12 @@
 from enum import Enum
 from uuid import UUID
 from faker import Faker
-from pydantic import BaseModel
 from abc import ABC, abstractmethod
-from typing import Callable, ClassVar, Set
+from pydantic import BaseModel, Field
+from pydantic.generics import GenericModel
+from typing import Callable, ClassVar, Set, TypeVar, Generic, List
 
-
+T = TypeVar("T")
 
 class BaseDataGenerator(ABC):
     def __init__(self, locale="en_US"):
@@ -25,6 +26,7 @@ class StateKeywords(Enum):
     MEDICAL = ("medical", "Keyword to medical data of patients in the state")
     PRODUCTS = ("products", "Keyword to store products list in the state")
     ORDERS = ("orders", "Keyword to store orders list in the state")
+    INCOMES = ("incomes", "Keyword to store incomes list in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key
@@ -62,7 +64,7 @@ class AppStateAccessor:
             length (int, optional): How many items should be generated. Defaults to 50.
         """
         if not self.exists(key):
-            self.set(key, func(length=length, **kwargs))
+            self.set(key=key, value=func(length=length, **kwargs))
         return self.get(key)
 
 
@@ -81,10 +83,11 @@ class CustomBaseModel(BaseModel):
         }
 
 
-class CustomPaginationBaseModel(BaseModel):
+class CustomPaginationBaseModel(GenericModel, Generic[T]):
     page: int
     length: int
     total: int
+    results: List[T] = Field(default_factory=list)
 
 
 class SexChoices(Enum):

@@ -14,7 +14,7 @@ class EmployeeGenerator(BaseDataGenerator):
                 "job_title": self.fake.job(),
                 "hire_date": self.fake.date_of_birth(minimum_age=0, maximum_age=90).isoformat(),
                 "department": self.fake.random_element([dept.value for dept in DepartmentChoices]),
-                "salary": round(self.fake.random_int(24_000, 200_000), 2),
+                "salary": self.fake.pyfloat(left_digits=7, right_digits=2, min_value=24_000, max_value=300_00),
             }
             for i in range(1, n + 1)
         ]
