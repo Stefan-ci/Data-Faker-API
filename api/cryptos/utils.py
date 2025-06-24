@@ -22,14 +22,17 @@ class CryptoGenerator(BaseDataGenerator):
     
     
     def generate(self, n=10): # type: ignore
-        selected = random.sample(self.cryptos_list, k=min(n, len(self.cryptos_list)))
         return [
-            self._build_crypto(i, name, symbol)
-            for i, (name, symbol) in enumerate(selected, start=1)
+            self._build_crypto(i)
+            for i in range(1, n + 1)
         ]
     
     
-    def _build_crypto(self, id: int, name: str, symbol: str):
+    def _build_crypto(self, id: int):
+        choice = self.fake.random_element(self.cryptos_list)
+        name = choice[0]
+        symbol = choice[1]
+        
         price = round(random.uniform(0.05, 70000), 2)
         market_cap = round(price * random.uniform(10_000_000, 500_000_000), 2)
         volume = round(market_cap * random.uniform(0.01, 0.25), 2)
@@ -62,10 +65,9 @@ class CryptoTransactionGenerator(BaseDataGenerator):
     def generate(self, n=10):  # type: ignore
         # add a new crypto address provider
         self.fake.add_provider(CryptoAddress)
-        selected = random.sample(self.cryptos_symbols_list, k=min(n, len(self.cryptos_symbols_list)))
         return [
-            self._build_data(i, symbol)
-            for i, symbol in enumerate(selected, start=1)
+            self._build_data(i)
+            for i in range(1, n + 1)
         ]
     
     def generate_address(self, crypto_symbol: str):
@@ -90,7 +92,7 @@ class CryptoTransactionGenerator(BaseDataGenerator):
         return self.fake.sha256()
     
     
-    def _build_data(self, i: int, symbol: str):
+    def _build_data(self, i: int):
         symbol = self.fake.random_element(self.cryptos_symbols_list)
         statuses = ["completed", "pending", "failed"]
         
