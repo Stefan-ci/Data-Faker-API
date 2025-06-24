@@ -8,7 +8,6 @@ from api.users.views import UserApiView
 from api.todos.views import TodoApiView
 from api.chats.views import ChatApiView
 from api.orders.views import OrderApiView
-from api.cryptos.views import CryptoApiView
 from api.incomes.views import IncomeApiView
 from api.expenses.views import ExpenseApiView
 from api.products.views import ProductApiView
@@ -18,6 +17,7 @@ from api.employees.views import EmployeeApiView
 from api.medical.views import MedicalDataApiView
 from api.attendances.views import AttendanceApiView
 from api.notifications.views import NotificationApiView
+from api.cryptos.views import CryptoApiView, CryptoTransactionApiView
 
 
 @asynccontextmanager
@@ -52,3 +52,4 @@ app.include_router(AnalyticApiView().router)
 app.include_router(AttendanceApiView().router)
 app.include_router(MedicalDataApiView().router)
 app.include_router(NotificationApiView().router)
+app.include_router(CryptoTransactionApiView().router)

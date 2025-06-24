@@ -1,4 +1,5 @@
 import random
+from faker_crypto import CryptoAddress
 from utils.base import BaseDataGenerator
 
 
@@ -45,6 +46,74 @@ class CryptoGenerator(BaseDataGenerator):
             "change_24h": change,
             "last_updated": self.fake.date_time().isoformat(),
         }
+
+
+
+
+class CryptoTransactionGenerator(BaseDataGenerator):
+    
+    @property
+    def cryptos_symbols_list(self):
+        return [
+            "BTC", "ETH", "BNB", "SOL", "ADA", "XRP", "LTC", "DOGE", "DOT"
+        ]
+    
+    
+    def generate(self, n=10):  # type: ignore
+        # add a new crypto address provider
+        self.fake.add_provider(CryptoAddress)
+        selected = random.sample(self.cryptos_symbols_list, k=min(n, len(self.cryptos_symbols_list)))
+        return [
+            self._build_data(i, symbol)
+            for i, symbol in enumerate(selected, start=1)
+        ]
+    
+    def generate_address(self, crypto_symbol: str):
+        if crypto_symbol.upper() == "BTC":
+            return self.fake.bitcoin_address()
+        elif crypto_symbol.upper() == "ETH":
+            return self.fake.ethereum_address()
+        elif crypto_symbol.upper() == "BNB":
+            return self.fake.binance_smart_chain_address()
+        elif crypto_symbol.upper() == "SOL":
+            return self.fake.solana_address()
+        elif crypto_symbol.upper() == "ADA":
+            return self.fake.cardano_address()
+        elif crypto_symbol.upper() == "XRP":
+            return self.fake.ripple_address()
+        elif crypto_symbol.upper() == "LTC":
+            return self.fake.litecoin_address()
+        elif crypto_symbol.upper() == "DOGE":
+            return self.fake.dogecoin_address()
+        elif crypto_symbol.upper() == "DOT":
+            return self.fake.polygon_address()
+        return self.fake.sha256()
+    
+    
+    def _build_data(self, i: int, symbol: str):
+        symbol = self.fake.random_element(self.cryptos_symbols_list)
+        statuses = ["completed", "pending", "failed"]
+        
+        return {
+            "id": i,
+            "uuid": self.fake.uuid4(),
+            "sender": self.generate_address(crypto_symbol=symbol),
+            "receiver": self.generate_address(crypto_symbol=symbol),
+            "crypto_symbol": symbol,
+            "amount": round(random.uniform(0.001, 50), 8),
+            "fee": round(random.uniform(0.0001, 0.005), 8),
+            "timestamp": self.fake.date_time_between(start_date="-30d", end_date="now").isoformat(),
+            "status": self.fake.random_element(statuses),
+        }
+
+
+
+
+
+
+
+def generate_cryptos_transactions_data(length=10):
+    return CryptoTransactionGenerator().generate(n=length)
 
 
 def generate_cryptos_data(length=10):

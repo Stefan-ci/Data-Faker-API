@@ -34,6 +34,7 @@ class StateKeywords(Enum):
     CHATS = ("chats", "Keyword to store chats in the state")
     ANALYTICS = ("analytics", "Keyword to store analytics in the state")
     CRYPTOS = ("cryptos", "Keyword to store cryptos in the state")
+    CRYPTO_TRANSACTIONS = ("crypto_transactions", "Keyword to store crypto transactions in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key

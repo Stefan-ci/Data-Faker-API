@@ -12,6 +12,21 @@ class CryptoModel(CustomBaseModel):
     last_updated: datetime
 
 
+class CryptoTransactionModel(CustomBaseModel):
+    sender: str
+    receiver: str
+    crypto_symbol: str
+    amount: float
+    fee: float
+    timestamp: datetime
+    status: str = Field(..., description="e.g. 'completed', 'pending', 'failed'")
+
+
 class CryptoPaginationResponse(CustomPaginationBaseModel):
     """ Response model for paginated cryptos list """
     results: list[CryptoModel] = Field(default_factory=list)
+
+
+class CryptoTransactionPaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated crypto transactions list """
+    results: list[CryptoTransactionModel] = Field(default_factory=list)
