@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from api.users.views import UserApiView
 from api.orders.views import OrderApiView
 from api.incomes.views import IncomeApiView
+from api.expenses.views import ExpenseApiView
 from api.products.views import ProductApiView
 from api.employees.views import EmployeeApiView
 from api.medical.views import MedicalDataApiView
@@ -33,5 +34,6 @@ app.include_router(UserApiView().router)
 app.include_router(OrderApiView().router)
 app.include_router(IncomeApiView().router)
 app.include_router(ProductApiView().router)
+app.include_router(ExpenseApiView().router)
 app.include_router(EmployeeApiView().router)
 app.include_router(MedicalDataApiView().router)

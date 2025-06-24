@@ -3,7 +3,6 @@ from uuid import UUID
 from faker import Faker
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
 from typing import Callable, ClassVar, Set, TypeVar, Generic, List
 
 T = TypeVar("T")
@@ -21,12 +20,14 @@ class BaseDataGenerator(ABC):
 
 class StateKeywords(Enum):
     """ Utility used to store data in state based centralized keywords """
-    USERS = ("users", "Keyword to store users list in the state")
-    EMPLOYEES = ("employees", "Keyword to store employees list in the state")
+    USERS = ("users", "Keyword to store users in the state")
+    EMPLOYEES = ("employees", "Keyword to store employees in the state")
     MEDICAL = ("medical", "Keyword to medical data of patients in the state")
-    PRODUCTS = ("products", "Keyword to store products list in the state")
-    ORDERS = ("orders", "Keyword to store orders list in the state")
-    INCOMES = ("incomes", "Keyword to store incomes list in the state")
+    PRODUCTS = ("products", "Keyword to store products in the state")
+    ORDERS = ("orders", "Keyword to store orders in the state")
+    INCOMES = ("incomes", "Keyword to store incomes in the state")
+    EXPENSES = ("expenses", "Keyword to store expenses in the state")
+    CUSTOMERS = ("customers", "Keyword to store customers in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key
@@ -83,7 +84,7 @@ class CustomBaseModel(BaseModel):
         }
 
 
-class CustomPaginationBaseModel(GenericModel, Generic[T]):
+class CustomPaginationBaseModel(BaseModel, Generic[T]):
     page: int
     length: int
     total: int

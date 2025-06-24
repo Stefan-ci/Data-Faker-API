@@ -21,8 +21,8 @@ class BaseModelViewSet(ABC):
     def __init__(self):
         self.router = APIRouter(prefix=self.endpoint_prefix, tags=[self.verbose_name_plural.capitalize()])
         self.router.add_api_route("/", self.list_view, response_model=self.pagination_model, methods=["GET"], summary=f"List {self.verbose_name_plural.lower()}")
-        self.router.add_api_route("/{item_id}", self.retrieve_view, response_model=self.model, methods=["GET"], summary=f"Retrieve single {self.verbose_name.lower()}")
-        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary="Regenerate items")
+        self.router.add_api_route("/{id_or_uuid}", self.retrieve_view, response_model=self.model, methods=["GET"], summary=f"Retrieve single {self.verbose_name.lower()}")
+        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
     
     @abstractmethod
     def get_data_with_length(self, request: Request, length: int) -> list:
@@ -75,12 +75,12 @@ class BaseModelViewSet(ABC):
         )
     
     
-    async def retrieve_view(self, item_id: str, request: Request):
+    async def retrieve_view(self, id_or_uuid: str, request: Request):
         data = self.get_all_data(request=request)
         if not data:
             raise HTTPException(status_code=503, detail=f"{self.verbose_name_plural.capitalize()} data is not initialized.")
         
-        item = next((u for u in data if str(u["id"]) == item_id or str(u["uuid"]) == item_id), None)
+        item = next((u for u in data if str(u["id"]) == id_or_uuid or str(u["uuid"]) == id_or_uuid), None)
         if not item:
             raise HTTPException(status_code=404, detail=f"{self.verbose_name.capitalize()} not found")
         return item
