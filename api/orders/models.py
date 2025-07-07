@@ -21,3 +21,8 @@ class OrderModel(CustomBaseModel):
 class OrderPaginationResponse(CustomPaginationBaseModel):
     """ Response model for paginated order list """
     results: List[OrderModel] = Field(default_factory=list)
+
+
+class OrderItemPaginationResponse(CustomPaginationBaseModel):
+    """ Response model for paginated order items list """
+    results: List[OrderItemModel] = Field(default_factory=list)

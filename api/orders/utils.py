@@ -46,6 +46,28 @@ class OrderGenerator(BaseDataGenerator):
 
 
 
+class OrderItemGenerator(BaseDataGenerator):
+    def generate(self, n=10): # type: ignore
+        order_items = []
+        for index, product in enumerate(ProductGenerator().generate(n=n), start=1):
+            quantity = randint(1, 5)
+            order_items.append(
+                {
+                    "id": index,
+                    "uuid": self.fake.uuid4(),
+                    "quantity": quantity,
+                    "total": round(product["price"] * quantity, 2),
+                    "product": product,
+                }
+            )
+        return order_items
+
+
+
 
 def generate_orders_data(length=10):
     return OrderGenerator().generate(n=length)
+
+
+def generate_order_items_data(length=10):
+    return OrderItemGenerator().generate(n=length)

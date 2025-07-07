@@ -1,3 +1,4 @@
+from utils.base import Endpoints
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,4 +12,14 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def homepage_view(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    available_endpoints = []
+    for endpoint in Endpoints:
+        available_endpoints.append({
+            "endpoint": endpoint.endpoint,
+            "description": endpoint.description,
+        })
+    context = {
+        "request": request,
+        "available_endpoints": available_endpoints,
+    }
+    return templates.TemplateResponse(name="home.html", context=context)

@@ -1,6 +1,6 @@
 from fastapi import  Request
-from utils.base import StateKeywords
 from utils.viewset import BaseModelViewSet
+from utils.base import StateKeywords, Endpoints
 from api.cryptos.models import CryptoModel, CryptoPaginationResponse
 from api.cryptos.utils import generate_cryptos_data, generate_cryptos_transactions_data
 from api.cryptos.models import CryptoTransactionModel, CryptoTransactionPaginationResponse
@@ -12,7 +12,7 @@ class CryptoApiView(BaseModelViewSet):
     state_key = StateKeywords.CRYPTOS
     verbose_name = "crypto"
     verbose_name_plural = "cryptos"
-    endpoint_prefix = "/cryptos"
+    endpoint_prefix = Endpoints.CRYPTOS_BASE_ENDPOINT.endpoint
     tags = "Cryptocurrencies"
     
     def get_data_with_length(self, request: Request, length: int):
@@ -28,7 +28,7 @@ class CryptoTransactionApiView(BaseModelViewSet):
     state_key = StateKeywords.CRYPTO_TRANSACTIONS
     verbose_name = "crypto transaction"
     verbose_name_plural = "crypto transactions"
-    endpoint_prefix = "/crypto-transactions"
+    endpoint_prefix = Endpoints.CRYPTOS_TRANSACTIONS_BASE_ENDPOINT.endpoint
     tags = "Cryptocurrencies"
     
     def get_data_with_length(self, request: Request, length: int):

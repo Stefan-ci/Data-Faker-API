@@ -1,8 +1,8 @@
 from fastapi import Request
-from utils.base import StateKeywords
 from utils.viewset import BaseModelViewSet
-from api.orders.utils import generate_orders_data
-from api.orders.models import OrderModel, OrderPaginationResponse
+from utils.base import StateKeywords, Endpoints
+from api.orders.utils import generate_orders_data, generate_order_items_data
+from api.orders.models import OrderModel, OrderPaginationResponse, OrderItemModel, OrderItemPaginationResponse
 
 
 class OrderApiView(BaseModelViewSet):
@@ -11,10 +11,27 @@ class OrderApiView(BaseModelViewSet):
     state_key = StateKeywords.ORDERS
     verbose_name = "order"
     verbose_name_plural = "orders"
-    endpoint_prefix = "/orders"
+    endpoint_prefix = Endpoints.ORDERS_BASE_ENDPOINT.endpoint
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_orders_data, length=length)
     
     def regenerate_func(self, request: Request, length: int):
         self.get_accessor(request).set(key=self.state_key, value=generate_orders_data(length=length))
+
+
+
+class OrderItemApiView(BaseModelViewSet):
+    model = OrderItemModel
+    pagination_model = OrderItemPaginationResponse
+    state_key = StateKeywords.ORDER_ITEMS
+    verbose_name = "order item"
+    verbose_name_plural = "orders items"
+    endpoint_prefix = Endpoints.ORDER_ITEMS_BASE_ENDPOINT.endpoint
+    tags = "Order items"
+    
+    def get_data_with_length(self, request: Request, length: int):
+        return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_order_items_data, length=length)
+    
+    def regenerate_func(self, request: Request, length: int):
+        self.get_accessor(request).set(key=self.state_key, value=generate_order_items_data(length=length))

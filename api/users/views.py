@@ -1,6 +1,6 @@
 from fastapi import Request
-from utils.base import StateKeywords
 from utils.viewset import BaseModelViewSet
+from utils.base import StateKeywords, Endpoints
 from api.users.utils import generate_users_data
 from api.users.models import UserModel, UserPaginationResponse
 
@@ -11,7 +11,7 @@ class UserApiView(BaseModelViewSet):
     state_key = StateKeywords.USERS
     verbose_name = "user"
     verbose_name_plural = "users"
-    endpoint_prefix = "/users"
+    endpoint_prefix = Endpoints.USERS_BASE_ENDPOINT.endpoint
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_users_data, length=length)

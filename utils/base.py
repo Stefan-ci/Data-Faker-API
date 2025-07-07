@@ -25,6 +25,7 @@ class StateKeywords(Enum):
     MEDICAL = ("medical", "Keyword to medical data of patients in the state")
     PRODUCTS = ("products", "Keyword to store products in the state")
     ORDERS = ("orders", "Keyword to store orders in the state")
+    ORDER_ITEMS = ("order-items", "Keyword to store order items in the state")
     INCOMES = ("incomes", "Keyword to store incomes in the state")
     EXPENSES = ("expenses", "Keyword to store expenses in the state")
     PAYMENTS = ("payments", "Keyword to store payments in the state")
@@ -74,6 +75,38 @@ class AppStateAccessor:
         if not self.exists(key):
             self.set(key=key, value=func(length=length, **kwargs))
         return self.get(key)
+
+
+
+class Endpoints(Enum):
+    ANALYTICS_BASE_ENDPOINT = ("/analytics", "Fake analytics data")
+    ATTENDANCES_BASE_ENDPOINT = ("/attendances", "Fake attendances data")
+    CHATS_BASE_ENDPOINT = ("/chats", "Fake chats data")
+    CRYPTOS_BASE_ENDPOINT = ("/cryptos", "Fake cryptos data")
+    CRYPTOS_TRANSACTIONS_BASE_ENDPOINT = ("/cryptos-transactions", "Fake cryptos transactions data")
+    EMPLOYEES_BASE_ENDPOINT = ("/employees", "Fake employees data")
+    EXPENSES_BASE_ENDPOINT = ("/expenses", "Fake expenses data")
+    INCOMES_BASE_ENDPOINT = ("/incomes", "Fake incomes data")
+    MEDICAL_DATA_BASE_ENDPOINT = ("/medical", "Fake medical data")
+    NOTIFICATIONS_BASE_ENDPOINT = ("/notifications", "Fake notifications data")
+    ORDERS_BASE_ENDPOINT = ("/orders", "Fake orders data")
+    ORDER_ITEMS_BASE_ENDPOINT = ("/order-items", "Fake order items data")
+    PAYMENTS_BASE_ENDPOINT = ("/payments", "Fake payments data")
+    PRODUCTS_BASE_ENDPOINT = ("/products", "Fake products data")
+    TODOS_BASE_ENDPOINT = ("/todos", "Fake todos data")
+    USERS_BASE_ENDPOINT = ("/users", "Fake users data")
+    
+    def __init__(self, endpoint: str, description: str):
+        self._endpoint = endpoint
+        self.description = description
+    
+    @property
+    def endpoint(self) -> str:
+        return self._endpoint
+    
+    def __str__(self) -> str:
+        return self.description
+
 
 
 class CustomBaseModel(BaseModel):

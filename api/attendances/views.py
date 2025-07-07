@@ -1,6 +1,6 @@
 from fastapi import  Request
-from utils.base import StateKeywords
 from utils.viewset import BaseModelViewSet
+from utils.base import StateKeywords, Endpoints
 from api.attendances.utils import generate_attendances_data
 from api.attendances.models import AttendanceModel, AttendancePaginationResponse
 
@@ -11,7 +11,7 @@ class AttendanceApiView(BaseModelViewSet):
     state_key = StateKeywords.ATTENDANCES
     verbose_name = "attendance"
     verbose_name_plural = "attendances"
-    endpoint_prefix = "/attendances"
+    endpoint_prefix = Endpoints.ATTENDANCES_BASE_ENDPOINT.endpoint
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_attendances_data, length=length)

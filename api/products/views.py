@@ -1,6 +1,6 @@
 from fastapi import Request
-from utils.base import StateKeywords
 from utils.viewset import BaseModelViewSet
+from utils.base import StateKeywords, Endpoints
 from api.products.utils import generate_products_data
 from api.products.models import ProductModel, ProductPaginationResponse
 
@@ -11,7 +11,7 @@ class ProductApiView(BaseModelViewSet):
     state_key = StateKeywords.PRODUCTS
     verbose_name = "product"
     verbose_name_plural = "products"
-    endpoint_prefix = "/products"
+    endpoint_prefix = Endpoints.PRODUCTS_BASE_ENDPOINT.endpoint
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_products_data, length=length)
