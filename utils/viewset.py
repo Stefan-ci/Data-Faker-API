@@ -1,5 +1,5 @@
-from typing import Type, Optional
 from abc import ABC, abstractmethod
+from typing import Type, Optional, Callable, Any
 from fastapi import APIRouter, Query, Request, HTTPException
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
@@ -17,6 +17,7 @@ class BaseModelViewSet(ABC):
     verbose_name_plural: str
     endpoint_prefix: str
     tags: Optional[str] = None
+    generator_func: Optional[Callable[..., Any]] = None
     
     
     def __init__(self):

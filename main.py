@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-# views
+# template views
 from views.homepage import router as homepage_router
 
+# API views
 from api.users.views import UserApiView
 from api.todos.views import TodoApiView
 from api.chats.views import ChatApiView

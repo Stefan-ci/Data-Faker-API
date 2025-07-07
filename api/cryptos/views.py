@@ -14,6 +14,7 @@ class CryptoApiView(BaseModelViewSet):
     verbose_name_plural = "cryptos"
     endpoint_prefix = Endpoints.CRYPTOS_BASE_ENDPOINT.endpoint
     tags = "Cryptocurrencies"
+    generator_func = generate_cryptos_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_cryptos_data, length=length)
@@ -30,6 +31,7 @@ class CryptoTransactionApiView(BaseModelViewSet):
     verbose_name_plural = "crypto transactions"
     endpoint_prefix = Endpoints.CRYPTOS_TRANSACTIONS_BASE_ENDPOINT.endpoint
     tags = "Cryptocurrencies"
+    generator_func = generate_cryptos_transactions_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(

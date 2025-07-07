@@ -12,6 +12,7 @@ class AttendanceApiView(BaseModelViewSet):
     verbose_name = "attendance"
     verbose_name_plural = "attendances"
     endpoint_prefix = Endpoints.ATTENDANCES_BASE_ENDPOINT.endpoint
+    generator_func = generate_attendances_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_attendances_data, length=length)

@@ -12,6 +12,7 @@ class TodoApiView(BaseModelViewSet):
     verbose_name = "todo"
     verbose_name_plural = "todos"
     endpoint_prefix = Endpoints.TODOS_BASE_ENDPOINT.endpoint
+    generator_func = generate_todos_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_todos_data, length=length)

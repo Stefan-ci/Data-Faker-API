@@ -12,6 +12,7 @@ class ChatApiView(BaseModelViewSet):
     verbose_name = "chat"
     verbose_name_plural = "chats"
     endpoint_prefix = Endpoints.CHATS_BASE_ENDPOINT.endpoint
+    generator_func = generate_chats_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_chats_data, length=length)

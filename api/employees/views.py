@@ -12,6 +12,7 @@ class EmployeeApiView(BaseModelViewSet):
     verbose_name = "employee"
     verbose_name_plural = "employees"
     endpoint_prefix = Endpoints.EMPLOYEES_BASE_ENDPOINT.endpoint
+    generator_func = generate_employees_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_employees_data, length=length)

@@ -12,6 +12,7 @@ class OrderApiView(BaseModelViewSet):
     verbose_name = "order"
     verbose_name_plural = "orders"
     endpoint_prefix = Endpoints.ORDERS_BASE_ENDPOINT.endpoint
+    generator_func = generate_orders_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_orders_data, length=length)
@@ -29,6 +30,7 @@ class OrderItemApiView(BaseModelViewSet):
     verbose_name_plural = "orders items"
     endpoint_prefix = Endpoints.ORDER_ITEMS_BASE_ENDPOINT.endpoint
     tags = "Order items"
+    generator_func = generate_order_items_data
     
     def get_data_with_length(self, request: Request, length: int):
         return self.get_accessor(request).get_or_generate(key=self.state_key, func=generate_order_items_data, length=length)
