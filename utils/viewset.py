@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Type, Optional, Callable, Any
 from utils.base import StateKeywords, AppStateAccessor, Endpoints
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
-from fastapi import APIRouter, Query, Depends, Request, HTTPException
+from fastapi import APIRouter, Query, Depends, Request, HTTPException, status
 
 
 class BaseModelViewSet(ABC):
@@ -101,6 +101,10 @@ class BaseModelViewSet(ABC):
         end = start + page_size
         return data[start:end]
     
+    def get_item_by_id_or_uuid(self, data: list, id_or_uuid: str) -> Optional[dict]:
+        return next((item for item in data if str(item.get("id")) == id_or_uuid or str(item.get("uuid")) == id_or_uuid), None)
+    
+    
     
     
     async def list_view(self, request: Request, page_size: Optional[int] = Query(50, ge=1), page: Optional[int] = Query(1, ge=1),):
@@ -112,7 +116,7 @@ class BaseModelViewSet(ABC):
         all_data_length = len(data) or 0
         
         if data is None or not isinstance(data, list):
-            raise HTTPException(status_code=503, detail=f"{self.verbose_name_plural.capitalize()} data is not initialized.")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"{self.verbose_name_plural.capitalize()} data is not initialized.")
         
         return self.pagination_model(
             page=page,
@@ -124,20 +128,18 @@ class BaseModelViewSet(ABC):
     
     async def retrieve_view(self, id_or_uuid: str, request: Request):
         try:
-            data = self.get_all_data(request=request)
+            all_data = self.get_all_data(request=request)
         except AttributeError as e:
             self.regenerate_func(request=request, length=50) # regenerate data
-            data = self.get_all_data(request=request) # re-get data
+            all_data = self.get_all_data(request=request) # re-get data
         except Exception as e:
-            raise HTTPException(status_code=503, detail=f"Error while retrieving '{self.verbose_name.capitalize()}': {e}.")
+            return None, HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Error while retrieving '{self.verbose_name.capitalize()}': {e}.")
         
-        if not data:
-            raise HTTPException(status_code=503, detail=f"{self.verbose_name_plural.capitalize()} data is not initialized.")
-        
-        item = next((u for u in data if str(u["id"]) == id_or_uuid or str(u["uuid"]) == id_or_uuid), None)
+        item = self.get_item_by_id_or_uuid(all_data, id_or_uuid)
         if not item:
-            raise HTTPException(status_code=404, detail=f"{self.verbose_name.capitalize()} not found")
-        return item
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
+        
+        return self.model.model_validate(item) # Validate response with pydantic model
     
     
     async def regenerate_view(self, request: Request, length: int = Query(100, ge=1)):
