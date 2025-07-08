@@ -1,3 +1,4 @@
+from datetime import datetime
 from utils.base import Endpoints
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
@@ -13,13 +14,26 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def homepage_view(request: Request):
     available_endpoints = []
-    for endpoint in Endpoints:
+    base_url_str = str(request.base_url).rstrip('/')
+    
+    for endpoint_enum in Endpoints:
+        try:
+            absolute_url = request.url_for(endpoint_enum.route_name)
+        except Exception as e:
+            absolute_url = f"{base_url_str}{endpoint_enum.endpoint}"
+        
         available_endpoints.append({
-            "endpoint": endpoint.endpoint,
-            "description": endpoint.description,
+            "absolute_url": absolute_url,
+            "name": endpoint_enum.route_name,
+            "api_prefix": endpoint_enum.endpoint,
+            "description": endpoint_enum.description,
         })
     context = {
         "request": request,
         "available_endpoints": available_endpoints,
+        
+        "author_name": "@Stefan-ci",
+        "current_year": datetime.now().year,
+        "github_repo_url": "https://github.com/Stefan-ci/Data-Faker-API",
     }
     return templates.TemplateResponse(name="home.html", context=context)

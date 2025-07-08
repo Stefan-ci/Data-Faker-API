@@ -11,7 +11,7 @@ class ChatApiView(BaseModelViewSet):
     state_key = StateKeywords.CHATS
     verbose_name = "chat"
     verbose_name_plural = "chats"
-    endpoint_prefix = Endpoints.CHATS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.CHATS_BASE_ENDPOINT
     generator_func = generate_chats_data
     
     def get_data_with_length(self, request: Request, length: int):

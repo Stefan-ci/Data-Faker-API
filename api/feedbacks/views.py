@@ -11,7 +11,7 @@ class FeedbackApiView(BaseModelViewSet):
     state_key = StateKeywords.FEEDBACKS
     verbose_name = "feedback"
     verbose_name_plural = "feedbacks"
-    endpoint_prefix = Endpoints.FEEDBACKS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.FEEDBACKS_BASE_ENDPOINT
     generator_func = generate_feedbacks_data
     
     def get_data_with_length(self, request: Request, length: int):

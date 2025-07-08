@@ -87,31 +87,45 @@ class AppStateAccessor:
 
 
 class Endpoints(Enum):
-    ANALYTICS_BASE_ENDPOINT = ("/analytics", "Fake analytics data")
-    ATTENDANCES_BASE_ENDPOINT = ("/attendances", "Fake attendances data")
-    CHATS_BASE_ENDPOINT = ("/chats", "Fake chats data")
-    CRYPTOS_BASE_ENDPOINT = ("/cryptos", "Fake cryptos data")
-    CRYPTOS_TRANSACTIONS_BASE_ENDPOINT = ("/cryptos-transactions", "Fake cryptos transactions data")
-    EMPLOYEES_BASE_ENDPOINT = ("/employees", "Fake employees data")
-    EXPENSES_BASE_ENDPOINT = ("/expenses", "Fake expenses data")
-    INCOMES_BASE_ENDPOINT = ("/incomes", "Fake incomes data")
-    MEDICAL_DATA_BASE_ENDPOINT = ("/medical", "Fake medical data")
-    NOTIFICATIONS_BASE_ENDPOINT = ("/notifications", "Fake notifications data")
-    ORDERS_BASE_ENDPOINT = ("/orders", "Fake orders data")
-    ORDER_ITEMS_BASE_ENDPOINT = ("/order-items", "Fake order items data")
-    PAYMENTS_BASE_ENDPOINT = ("/payments", "Fake payments data")
-    PRODUCTS_BASE_ENDPOINT = ("/products", "Fake products data")
-    TODOS_BASE_ENDPOINT = ("/todos", "Fake todos data")
-    USERS_BASE_ENDPOINT = ("/users", "Fake users data")
-    FEEDBACKS_BASE_ENDPOINT = ("/feedbacks", "Fake feedbacks data")
+    ANALYTICS_BASE_ENDPOINT = ("/analytics", "Fake analytics data", "analytics-list")
+    ATTENDANCES_BASE_ENDPOINT = ("/attendances", "Fake attendances data", "attendances-list")
+    CHATS_BASE_ENDPOINT = ("/chats", "Fake chats data", "chats-list")
+    CRYPTOS_BASE_ENDPOINT = ("/cryptos", "Fake cryptos data", "cryptos-list")
+    CRYPTOS_TRANSACTIONS_BASE_ENDPOINT = ("/cryptos-transactions", "Fake cryptos transactions data", "cryptos_transactions-list")
+    EMPLOYEES_BASE_ENDPOINT = ("/employees", "Fake employees data", "employees-list")
+    EXPENSES_BASE_ENDPOINT = ("/expenses", "Fake expenses data", "expenses-list")
+    INCOMES_BASE_ENDPOINT = ("/incomes", "Fake incomes data", "incomes-list")
+    MEDICAL_DATA_BASE_ENDPOINT = ("/medical", "Fake medical data", "medical-list")
+    NOTIFICATIONS_BASE_ENDPOINT = ("/notifications", "Fake notifications data", "notifications-list")
+    ORDERS_BASE_ENDPOINT = ("/orders", "Fake orders data", "orders-list")
+    ORDER_ITEMS_BASE_ENDPOINT = ("/order-items", "Fake order items data", "order_items-list")
+    PAYMENTS_BASE_ENDPOINT = ("/payments", "Fake payments data", "payments-list")
+    PRODUCTS_BASE_ENDPOINT = ("/products", "Fake products data", "products-list")
+    TODOS_BASE_ENDPOINT = ("/todos", "Fake todos data", "todos-list")
+    USERS_BASE_ENDPOINT = ("/users", "Fake users data", "users-list")
+    FEEDBACKS_BASE_ENDPOINT = ("/feedbacks", "Fake feedbacks data", "feedbacks-list")
     
-    def __init__(self, endpoint: str, description: str):
-        self._endpoint = endpoint
+    def __init__(self, endpoint_prefix: str, description: str, route_name: str):
+        self._endpoint_prefix = endpoint_prefix
         self.description = description
+        self._route_name = route_name
+    
     
     @property
     def endpoint(self) -> str:
-        return self._endpoint
+        return self._endpoint_prefix
+    
+    @property
+    def route_name(self) -> str:
+        return self._route_name
+    
+    @property
+    def detail_route_name(self) -> str:
+        return f"retrieve_single_{self.endpoint.lower()}"
+    
+    @property
+    def list_route_name(self) -> str:
+        return self.route_name
     
     def __str__(self) -> str:
         return self.description

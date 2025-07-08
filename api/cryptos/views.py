@@ -12,7 +12,7 @@ class CryptoApiView(BaseModelViewSet):
     state_key = StateKeywords.CRYPTOS
     verbose_name = "crypto"
     verbose_name_plural = "cryptos"
-    endpoint_prefix = Endpoints.CRYPTOS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.CRYPTOS_BASE_ENDPOINT
     tags = "Cryptocurrencies"
     generator_func = generate_cryptos_data
     
@@ -29,7 +29,7 @@ class CryptoTransactionApiView(BaseModelViewSet):
     state_key = StateKeywords.CRYPTO_TRANSACTIONS
     verbose_name = "crypto transaction"
     verbose_name_plural = "crypto transactions"
-    endpoint_prefix = Endpoints.CRYPTOS_TRANSACTIONS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.CRYPTOS_TRANSACTIONS_BASE_ENDPOINT
     tags = "Cryptocurrencies"
     generator_func = generate_cryptos_transactions_data
     

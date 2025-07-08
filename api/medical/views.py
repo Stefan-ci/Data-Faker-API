@@ -11,7 +11,7 @@ class MedicalDataApiView(BaseModelViewSet):
     state_key = StateKeywords.MEDICAL
     verbose_name = "medical"
     verbose_name_plural = "medicals"
-    endpoint_prefix = Endpoints.MEDICAL_DATA_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.MEDICAL_DATA_BASE_ENDPOINT
     generator_func = generate_medical_data
     
     def get_data_with_length(self, request: Request, length: int):

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Type, Optional, Callable, Any
-from utils.base import StateKeywords, AppStateAccessor
+from utils.base import StateKeywords, AppStateAccessor, Endpoints
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 from fastapi import APIRouter, Query, Depends, Request, HTTPException
 
@@ -14,13 +14,13 @@ class BaseModelViewSet(ABC):
     state_key: StateKeywords
     verbose_name: str
     verbose_name_plural: str
-    endpoint_prefix: str
+    endpoint_data: Endpoints
     tags: Optional[str] = None
     generator_func: Optional[Callable[..., Any]] = None
     
     
     def __init__(self):
-        self.router = APIRouter(prefix=self.endpoint_prefix, tags=[self.tags] if self.tags else [self.verbose_name_plural.capitalize()])
+        self.router = APIRouter(prefix=self.endpoint_data.endpoint, tags=[self.tags] if self.tags else [self.verbose_name_plural.capitalize()])
         
         # inject filters here and use them in as dependecies
         # that way, parameters (query params) will be defined automatically. No need to define them manually
@@ -31,10 +31,18 @@ class BaseModelViewSet(ABC):
             response_model=self.pagination_model,
             methods=["GET"],
             summary=f"List {self.verbose_name_plural.lower()}",
-            dependencies=[Depends(self.specific_filter_dependency)] # declaring query params
+            dependencies=[Depends(self.specific_filter_dependency)], # declaring query params
+            name=self.endpoint_data.route_name
         )
         
-        self.router.add_api_route("/{id_or_uuid}", self.retrieve_view, response_model=self.model, methods=["GET"], summary=f"Retrieve single {self.verbose_name.lower()}")
+        self.router.add_api_route(
+            "/{id_or_uuid}",
+            self.retrieve_view,
+            response_model=self.model,
+            methods=["GET"],
+            summary=f"Retrieve single {self.verbose_name.lower()}",
+            name=self.endpoint_data.detail_route_name
+        )
         self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
     
     

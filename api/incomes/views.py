@@ -11,7 +11,7 @@ class IncomeApiView(BaseModelViewSet):
     state_key = StateKeywords.INCOMES
     verbose_name = "income"
     verbose_name_plural = "incomes"
-    endpoint_prefix = Endpoints.INCOMES_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.INCOMES_BASE_ENDPOINT
     generator_func = generate_incomes_data
     
     def get_data_with_length(self, request: Request, length: int):

@@ -5,49 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fake Data API</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <style>
+        a {
+            transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-    <div class="max-w-4xl mx-auto py-10 px-6">
-        <h1 class="text-4xl font-bold mb-4 text-blue-700">🧪 Fake Data API</h1>
-        <p class="text-lg mb-6">
-            Generate fake data for testing and prototyping purposes using FastAPI and Faker.
-        </p>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-800 font-sans min-h-screen flex items-center justify-center py-12">
+    <div class="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+        <header class="text-center mb-10">
+            <h1 class="text-5xl font-extrabold mb-4 text-blue-700 leading-tight">
+                🧪 Fake Data API
+            </h1>
+            <p class="text-xl text-gray-600">
+                Generate dynamic, realistic data for your development and testing needs.
+            </p>
+        </header>
 
-        <h2 class="text-2xl font-semibold mb-2">Available Endpoints</h2>
-        <ul class="list-disc ml-6 mb-6 space-y-1">
-            {% for endpoint in available_endpoints %}
-                <li>
-                    <code class="bg-gray-200 px-2 py-1 rounded">
-                        {{ endpoint.endpoint }}
-                    </code>
-                    – {{ endpoint.description|safe }}
-                </li>
-            {% endfor %}
-        </ul>
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-gray-700 border-b-2 border-blue-300 pb-2">
+                API Documentation
+            </h2>
+            <ul class="list-disc ml-6 space-y-2">
+                <li><a href="/docs" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">Swagger UI</a></li>
+                <li><a href="/redoc" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">ReDoc</a></li>
+            </ul>
+        </section>
 
-        <h2 class="text-2xl font-semibold mb-2">Data Persistence</h2>
-        <p class="mb-4">
-            This API does <strong>not use any database</strong>. All generated data is stored in FastAPI's application state
-            on first request. Once cached, the same data is reused on subsequent requests unless explicitly regenerated.
-        </p>
-        <p class="mb-4">
-            To force data refresh, use the <code class="bg-gray-200 px-2 py-1 rounded">/regenerate/</code> endpoint on the
-            corresponding resource (e.g., <code class="bg-gray-200 px-2 py-1 rounded">POST /users/regenerate?length=100</code>).
-            You may optionally specify a <code class="bg-gray-200 px-2 py-1 rounded">length</code> query parameter to define how many records to generate.
-        </p>
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-gray-700 border-b-2 border-blue-300 pb-2">
+                Available Endpoints
+            </h2>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for endpoint in available_endpoints %}
+                    <li class="bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <a href="{{ endpoint.absolute_url }}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium text-lg block">
+                            {{ endpoint.api_prefix }} </a>
+                        <p class="text-gray-500 text-sm mt-1">
+                            {{ endpoint.description|safe }}
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1 break-words">
+                            {{ endpoint.absolute_url }}
+                        </p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
 
-        <h2 class="text-2xl font-semibold mb-2">Locale Support (Limited)</h2>
-        <p class="mb-6">
-            You can attempt to specify a locale using <code class="bg-gray-200 px-2 py-1 rounded">?locale=fr_FR</code> or
-            the <code class="bg-gray-200 px-2 py-1 rounded">Accept-Language</code> header. However, due to limitations in the
-            Faker library, <strong>multi-locale support is partially broken</strong>. Some methods may raise errors if the selected locale is not fully compatible.
-        </p>
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-gray-700 border-b-2 border-blue-300 pb-2">
+                Data Persistence
+            </h2>
+            <p class="text-gray-600 leading-relaxed mb-4">
+                This API does <strong class="font-semibold text-gray-700">not use any database</strong>. All generated data is
+                stored in FastAPI's application state on first request. Once cached, the same data is reused on
+                subsequent requests unless explicitly regenerated.
+            </p>
+            <p class="text-gray-600 leading-relaxed">
+                To force a data refresh, use the
+                <code class="bg-gray-200 text-gray-700 px-2 py-1 rounded font-mono text-sm border border-gray-300">/regenerate/</code>
+                endpoint on the corresponding resource (e.g.,
+                <code class="bg-gray-200 text-gray-700 px-2 py-1 rounded font-mono text-sm border border-gray-300">POST /users/regenerate?length=100</code>).
+                You may optionally specify a
+                <code class="bg-gray-200 text-gray-700 px-2 py-1 rounded font-mono text-sm border border-gray-300">length</code>
+                query parameter to define how many records to generate.
+            </p>
+        </section>
 
-        <h2 class="text-2xl font-semibold mb-2">API Documentation</h2>
-        <ul class="list-disc ml-6 space-y-1">
-            <li><a href="/docs" class="text-blue-500 hover:underline">Swagger UI</a></li>
-            <li><a href="/redoc" class="text-blue-500 hover:underline">ReDoc</a></li>
-        </ul>
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold mb-4 text-gray-700 border-b-2 border-blue-300 pb-2">
+                Locale Support (Limited)
+            </h2>
+            <p class="text-gray-600 leading-relaxed">
+                You can attempt to specify a locale using
+                <code class="bg-gray-200 text-gray-700 px-2 py-1 rounded font-mono text-sm border border-gray-300">?locale=fr_FR</code>
+                or the
+                <code class="bg-gray-200 text-gray-700 px-2 py-1 rounded font-mono text-sm border border-gray-300">Accept-Language</code>
+                header. However, due to limitations in the Faker library,
+                <strong class="font-semibold text-gray-700">multi-locale support is partially broken</strong>. Some methods
+                may raise errors if the selected locale is not fully compatible. So I've <strong>put it on hold for now</strong>.
+                Feel free to suggest any <strong>improvements</strong>.
+            </p>
+        </section>
+
+        <footer class="text-center text-gray-400 mt-12 text-sm">
+            <p>
+                &copy; {{ current_year }} Fake Data API. All rights reserved.
+                <br>
+                Built by <span class="font-semibold text-gray-500">{{ author_name }}</span>.
+                Source code on <a href="{{ github_repo_url }}" class="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">GitHub</a>.
+            </p>
+        </footer>
     </div>
 </body>
 </html>

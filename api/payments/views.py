@@ -11,7 +11,7 @@ class PaymentApiView(BaseModelViewSet):
     state_key = StateKeywords.PAYMENTS
     verbose_name = "payment"
     verbose_name_plural = "payments"
-    endpoint_prefix = Endpoints.PAYMENTS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.PAYMENTS_BASE_ENDPOINT
     generator_func = generate_payments_data
     
     def get_data_with_length(self, request: Request, length: int):

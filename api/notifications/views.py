@@ -11,7 +11,7 @@ class NotificationApiView(BaseModelViewSet):
     state_key = StateKeywords.NOTIFICATIONS
     verbose_name = "notification"
     verbose_name_plural = "notifications"
-    endpoint_prefix = Endpoints.NOTIFICATIONS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.NOTIFICATIONS_BASE_ENDPOINT
     generator_func = generate_notifications_data
     
     def get_data_with_length(self, request: Request, length: int):

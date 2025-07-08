@@ -11,7 +11,7 @@ class AnalyticApiView(BaseModelViewSet):
     state_key = StateKeywords.ANALYTICS
     verbose_name = "analytic"
     verbose_name_plural = "analytics"
-    endpoint_prefix = Endpoints.ANALYTICS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.ANALYTICS_BASE_ENDPOINT
     generator_func = generate_analytics_data
     
     def get_data_with_length(self, request: Request, length: int):

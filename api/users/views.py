@@ -11,7 +11,7 @@ class UserApiView(BaseModelViewSet):
     state_key = StateKeywords.USERS
     verbose_name = "user"
     verbose_name_plural = "users"
-    endpoint_prefix = Endpoints.USERS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.USERS_BASE_ENDPOINT
     generator_func = generate_users_data
     
     def get_data_with_length(self, request: Request, length: int):

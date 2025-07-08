@@ -11,7 +11,7 @@ class ProductApiView(BaseModelViewSet):
     state_key = StateKeywords.PRODUCTS
     verbose_name = "product"
     verbose_name_plural = "products"
-    endpoint_prefix = Endpoints.PRODUCTS_BASE_ENDPOINT.endpoint
+    endpoint_data = Endpoints.PRODUCTS_BASE_ENDPOINT
     generator_func = generate_products_data
     
     def get_data_with_length(self, request: Request, length: int):
