@@ -34,7 +34,8 @@ app = FastAPI(
     description="An API serving fake data. Credits: [Faker](https://faker.readthedocs.io/en/master/). Git repo: [GitHub](https://github.com/Stefan-ci/Data-Faker-API)",
     version="1.0.0",
     lifespan=on_startup,
-    debug=True
+    debug=True,
+    swagger_ui_parameters={"defaultModelsExpandDepth": 0}, # Collapse schema section in the docs (too long)
 )
 
 # Include API routes
