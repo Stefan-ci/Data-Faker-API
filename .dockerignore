@@ -1,0 +1,39 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build and packaging
+*.egg-info/
+dist/
+build/
+
+# Log files and runtime outputs
+*.log
+
+# Environment/configuration
+.env
+*.env
+draft.*
+draft/
+
+# Docker
+Dockerfile
+.dockerignore
