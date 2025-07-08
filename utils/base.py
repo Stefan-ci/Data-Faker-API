@@ -2,8 +2,9 @@ from enum import Enum
 from uuid import UUID
 from faker import Faker
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field
-from typing import Callable, ClassVar, Set, TypeVar, Generic, List
+from fastapi import Query, Depends, Request
+from pydantic import BaseModel, Field, create_model
+from typing import Callable, ClassVar, Set, TypeVar, Generic, List, Optional
 
 T = TypeVar("T")
 
@@ -38,6 +39,9 @@ class StateKeywords(Enum):
     CRYPTO_TRANSACTIONS = ("crypto_transactions", "Keyword to store crypto transactions in the state")
     FEEDBACKS = ("feedbacks", "Keyword to store feedbacks in the state")
     
+    
+    _DYNAMIC_FILTERS_DATA = ("_dynamic_filters_data", "Keyword to store dynamic filters data in the state")
+    
     def __init__(self, key: str, description: str):
         self._key = key
         self.description = description
@@ -54,11 +58,14 @@ class AppStateAccessor:
     def __init__(self, state):
         self._state = state
     
-    def get(self, key: StateKeywords):
+    def get(self, key: StateKeywords|str):
+        if isinstance(key, str):
+            return getattr(self._state, key)
         return getattr(self._state, key.key)
     
     def set(self, key: StateKeywords, value):
         setattr(self._state, key.key, value)
+        return self.get(key=key)
     
     def exists(self, key: StateKeywords) -> bool:
         return hasattr(self._state, key.key)
@@ -124,12 +131,33 @@ class CustomBaseModel(BaseModel):
             name for name in cls.model_fields.keys()
             if name not in cls.EXCLUDED_FIELDS_ON_SEARCH
         }
+    
+    
+    @classmethod
+    def _create_filter_dependency_for_model(cls) -> Callable[[Request], None]:
+        filterable_fields = cls.get_filterable_fields()
+        pydantic_fields = {}
+        
+        for field_name in filterable_fields:
+            model_field = cls.model_fields.get(field_name)
+            if model_field:
+                field_type = Optional[model_field.annotation]
+                pydantic_fields[field_name] = (field_type, Query(None, description=f"Filter by {field_name}"))
+            else:
+                pydantic_fields[field_name] = (Optional[str], Query(None, description=f"Filter by {field_name}"))
+        
+        FilterModel = create_model(f"{cls.__name__}Filter", **pydantic_fields)
+        
+        def _actual_filter_injector(request: Request, filters_params: FilterModel = Depends()) -> None: # type: ignore
+            AppStateAccessor(request.app.state).set(key=StateKeywords._DYNAMIC_FILTERS_DATA, value=filters_params.model_dump(exclude_none=True))
+        
+        return _actual_filter_injector
 
 
 class CustomPaginationBaseModel(BaseModel, Generic[T]):
     page: int
-    length: int
-    total: int
+    page_size: int
+    total_obj: int
     results: List[T] = Field(default_factory=list)
 
 
