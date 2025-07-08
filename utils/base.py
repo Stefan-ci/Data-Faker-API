@@ -36,6 +36,7 @@ class StateKeywords(Enum):
     ANALYTICS = ("analytics", "Keyword to store analytics in the state")
     CRYPTOS = ("cryptos", "Keyword to store cryptos in the state")
     CRYPTO_TRANSACTIONS = ("crypto_transactions", "Keyword to store crypto transactions in the state")
+    FEEDBACKS = ("feedbacks", "Keyword to store feedbacks in the state")
     
     def __init__(self, key: str, description: str):
         self._key = key
@@ -95,6 +96,7 @@ class Endpoints(Enum):
     PRODUCTS_BASE_ENDPOINT = ("/products", "Fake products data")
     TODOS_BASE_ENDPOINT = ("/todos", "Fake todos data")
     USERS_BASE_ENDPOINT = ("/users", "Fake users data")
+    FEEDBACKS_BASE_ENDPOINT = ("/feedbacks", "Fake feedbacks data")
     
     def __init__(self, endpoint: str, description: str):
         self._endpoint = endpoint

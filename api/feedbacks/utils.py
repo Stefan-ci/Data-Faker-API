@@ -1,15 +1,14 @@
 from utils.base import BaseDataGenerator
 
 
-class ChatGenerator(BaseDataGenerator):
+class FeedbackGenerator(BaseDataGenerator):
     def generate(self, n=10): # type: ignore
         return [
             {
                 "id": i,
                 "uuid": self.fake.uuid4(),
                 "sender": self.fake.name(),
-                "receiver": self.fake.name(),
-                "message": self.fake.sentence(),
+                "content": self.fake.text(),
                 "timestamp": self.fake.date_time(),
                 "is_read": self.fake.boolean()
             }
@@ -17,5 +16,5 @@ class ChatGenerator(BaseDataGenerator):
         ]
 
 
-def generate_chats_data(length=10):
-    return ChatGenerator().generate(n=length)
+def generate_feedbacks_data(length=10):
+    return FeedbackGenerator().generate(n=length)

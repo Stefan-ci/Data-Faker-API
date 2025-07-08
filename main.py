@@ -14,6 +14,7 @@ from api.products.views import ProductApiView
 from api.payments.views import PaymentApiView
 from api.analytics.views import AnalyticApiView
 from api.employees.views import EmployeeApiView
+from api.feedbacks.views import FeedbackApiView
 from api.medical.views import MedicalDataApiView
 from api.attendances.views import AttendanceApiView
 from api.notifications.views import NotificationApiView
@@ -50,6 +51,7 @@ app.include_router(ExpenseApiView().router)
 app.include_router(PaymentApiView().router)
 app.include_router(EmployeeApiView().router)
 app.include_router(AnalyticApiView().router)
+app.include_router(FeedbackApiView().router)
 app.include_router(OrderItemApiView().router)
 app.include_router(AttendanceApiView().router)
 app.include_router(MedicalDataApiView().router)

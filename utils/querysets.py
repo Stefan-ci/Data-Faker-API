@@ -48,7 +48,7 @@ class BaseQuerySet(Generic[T]):
     def get_or_none(self, **kwargs):
         try:
             return self.filter(**kwargs).first()
-        except Exception:
+        except Exception as e:
             return None
     
     def exclude(self, **kwargs) -> "BaseQuerySet[T]":

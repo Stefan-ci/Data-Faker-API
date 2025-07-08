@@ -7,7 +7,7 @@ class ChatModel(CustomBaseModel):
     receiver: str
     message: str
     timestamp: datetime
-    read: bool = False
+    is_read: bool = False
 
 
 class ChatPaginationResponse(CustomPaginationBaseModel):
