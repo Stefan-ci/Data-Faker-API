@@ -1,7 +1,48 @@
+from typing import Optional
+import os, binascii, hashlib
 from utils.base import BaseDataGenerator, SexChoices
 
 
+class PasswordManager:
+    def __init__(self, salt: Optional[bytes], iterations=100_000, dklen=32):
+        """
+        Password manager. Used to verify/hash a password
+        
+        Args:
+            salt (Optional[bytes]): Salt used to encrypt/decrypt the password. Defaults to os.urandom(16).
+            iterations (int, optional): Number of iterations to use while computing the password. Defaults to 100_000.
+            dklen (int, optional): _description_. Defaults to 32.
+        """
+        
+        self.encoder = "utf-8"
+        self.iterations = iterations
+        self.dklen = dklen
+        self.salt = salt if isinstance(salt, bytes) else os.urandom(16) # salt used to cook the SAUCE ;)
+    
+    def get_hash_key(self, password: str):
+        return hashlib.pbkdf2_hmac(
+            hash_name="sha256",
+            password=password.encode(self.encoder),
+            salt=self.salt,
+            iterations=self.iterations,
+            dklen=32
+        )
+    
+    def hash_password(self, password: str):
+        return binascii.hexlify(data=self.salt + self.get_hash_key(password=password)).decode(self.encoder)
+    
+    def verify_password(self, stored_password, password):
+        stored_bytes = binascii.unhexlify(stored_password)
+        old_key = stored_bytes[16:]
+        # recompute the key with the provided password
+        new_key = self.get_hash_key(password=password)
+        return old_key == new_key
+
+
+
 class UserGenerator(BaseDataGenerator):
+    pass_manager = PasswordManager(salt=None)
+    
     def generate(self, n=10): # type: ignore
         return [
             {
@@ -23,6 +64,7 @@ class UserGenerator(BaseDataGenerator):
                 "is_active": self.fake.boolean(),
                 "is_staff": self.fake.boolean(),
                 "is_superuser": self.fake.boolean(),
+                "password": self.pass_manager.hash_password(password=self.fake.word())
             }
             for i in range(1, n + 1)
         ]
