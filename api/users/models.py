@@ -1,4 +1,5 @@
 from pydantic import Field
+from typing import Optional
 from datetime import datetime
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 
@@ -19,6 +20,10 @@ class UserModel(CustomBaseModel):
     is_active: bool
     is_staff: bool
     is_superuser: bool
+    password: Optional[str]
+    
+    # excluding "password" on search
+    EXCLUDED_FIELDS_ON_SEARCH = {"password"}
 
 
 class UserPaginationResponse(CustomPaginationBaseModel):
