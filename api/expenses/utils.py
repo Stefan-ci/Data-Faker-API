@@ -1,8 +1,8 @@
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class ExpenseModelGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         categories = ["Food", "Transport", "Rent", "Utilities", "Entertainment"]
         labels = ["Grocery", "Taxi", "Internet", "Movie", "Electricity", "Water Bill", "Subscription"]
         
@@ -19,5 +19,5 @@ class ExpenseModelGenerator(BaseDataGenerator):
         ]
 
 
-def generate_expenses_data(length=10):
+def generate_expenses_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return ExpenseModelGenerator().generate(n=length)

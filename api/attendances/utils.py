@@ -1,8 +1,8 @@
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class AttendanceGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         return [
             {
                 "id": i,
@@ -16,5 +16,5 @@ class AttendanceGenerator(BaseDataGenerator):
         ]
 
 
-def generate_attendances_data(length=10):
+def generate_attendances_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return AttendanceGenerator().generate(n=length)

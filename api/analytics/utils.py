@@ -1,6 +1,6 @@
 import random
 from datetime import date, timedelta
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class AnalyticGenerator(BaseDataGenerator):
@@ -17,7 +17,7 @@ class AnalyticGenerator(BaseDataGenerator):
         ]
         return METRICS
     
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         today = date.today()
         
         return [
@@ -48,5 +48,5 @@ class AnalyticGenerator(BaseDataGenerator):
                 return round(random.uniform(1, 1000), 2)
 
 
-def generate_analytics_data(length=10):
+def generate_analytics_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return AnalyticGenerator().generate(n=length)

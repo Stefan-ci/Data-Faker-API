@@ -1,8 +1,8 @@
-from utils.base import BaseDataGenerator, ProductCategories
+from utils.base import BaseDataGenerator, ProductCategories, Constants
 
 
 class ProductGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         return [
             {
                 "id": i,
@@ -31,5 +31,5 @@ class ProductGenerator(BaseDataGenerator):
 
 
 
-def generate_products_data(length=10):
+def generate_products_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return ProductGenerator().generate(n=length)

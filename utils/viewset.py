@@ -1,8 +1,8 @@
 from uuid import UUID
 from abc import ABC, abstractmethod
 from typing import Type, Optional, Callable, Any, Union
-from utils.base import StateKeywords, AppStateAccessor, Endpoints
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
+from utils.base import StateKeywords, AppStateAccessor, Endpoints, Constants
 from fastapi import APIRouter, Query, Depends, Request, HTTPException, status
 
 
@@ -125,8 +125,8 @@ class BaseModelViewSet(ABC):
             return False
     
     
-    async def list_view(self, request: Request, page_size: Optional[int] = Query(50, ge=1), page: Optional[int] = Query(1, ge=1),):
-        page_size = page_size if page_size else 50
+    async def list_view(self, request: Request, page_size: Optional[int] = Query(Constants.PAGINATE_BY.value, ge=1), page: Optional[int] = Query(1, ge=1),):
+        page_size = page_size if page_size else Constants.PAGINATE_BY.value
         page = page if page else 1
         
         filters = self.get_accessor(request).get(StateKeywords._DYNAMIC_FILTERS_DATA)
@@ -154,7 +154,7 @@ class BaseModelViewSet(ABC):
         try:
             all_data = self.get_all_data(request=request)
         except AttributeError as e:
-            self.regenerate_func(request=request, length=50) # regenerate data
+            self.regenerate_func(request=request, length=Constants.PAGINATE_BY.value) # regenerate data
             all_data = self.get_all_data(request=request) # re-get data
         except Exception as e:
             return None, HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Error while retrieving '{self.verbose_name.capitalize()}': {e}.")
@@ -166,6 +166,6 @@ class BaseModelViewSet(ABC):
         return self.model.model_validate(item) # Validate response with pydantic model
     
     
-    async def regenerate_view(self, request: Request, length: int = Query(100, ge=1)):
+    async def regenerate_view(self, request: Request, length: int = Query(Constants.PAGINATE_BY.value, ge=1)):
         self.regenerate_func(request=request, length=length)
         return {"message": f"{length} {self.verbose_name_plural.lower()} regenerated."}

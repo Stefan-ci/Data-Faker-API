@@ -1,6 +1,6 @@
 from typing import Optional
 import os, binascii, hashlib
-from utils.base import BaseDataGenerator, SexChoices
+from utils.base import BaseDataGenerator, SexChoices, Constants
 
 
 class PasswordManager:
@@ -43,7 +43,7 @@ class PasswordManager:
 class UserGenerator(BaseDataGenerator):
     pass_manager = PasswordManager(salt=None)
     
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         return [
             {
                 "id": i,
@@ -70,5 +70,5 @@ class UserGenerator(BaseDataGenerator):
         ]
 
 
-def generate_users_data(length=10):
+def generate_users_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return UserGenerator().generate(n=length)

@@ -2,11 +2,18 @@ from enum import Enum
 from uuid import UUID
 from faker import Faker
 from abc import ABC, abstractmethod
-from fastapi import Query, Depends, Request
+from fastapi import Request, Query, Depends
 from pydantic import BaseModel, Field, create_model
 from typing import Callable, ClassVar, Set, TypeVar, Generic, List, Optional
 
 T = TypeVar("T")
+
+
+class Constants(Enum):
+    PAGINATE_BY = 50
+    DATA_GENERATION_LENGTH = 10
+
+
 
 class BaseDataGenerator(ABC):
     def __init__(self, locale="en_US"):
@@ -15,7 +22,7 @@ class BaseDataGenerator(ABC):
         self.fake = Faker(locale=self.locale)
     
     @abstractmethod
-    def generate(self, n):
+    def generate(self, n: int):
         pass
 
 
@@ -70,7 +77,7 @@ class AppStateAccessor:
     def exists(self, key: StateKeywords) -> bool:
         return hasattr(self._state, key.key)
     
-    def get_or_generate(self, key: StateKeywords, func: Callable[..., list], *, length=50, **kwargs):
+    def get_or_generate(self, key: StateKeywords, func: Callable[..., list], *, length=Constants.PAGINATE_BY.value, **kwargs):
         """
         Returns the value from state if exists, otherwise generates it using `func`.
         The generated data is stored in the state.

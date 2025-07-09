@@ -1,8 +1,8 @@
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class TodoGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         priorities = ["low", "medium", "high"]
         statuses = ["pending", "in progress", "completed"]
         
@@ -21,5 +21,5 @@ class TodoGenerator(BaseDataGenerator):
         ]
 
 
-def generate_todos_data(length=10):
+def generate_todos_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return TodoGenerator().generate(n=length)

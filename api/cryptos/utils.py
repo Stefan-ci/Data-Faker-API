@@ -1,6 +1,6 @@
 import random
 from faker_crypto import CryptoAddress
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class CryptoGenerator(BaseDataGenerator):
@@ -21,7 +21,7 @@ class CryptoGenerator(BaseDataGenerator):
         return cryptos
     
     
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         return [
             self._build_crypto(i)
             for i in range(1, n + 1)
@@ -62,7 +62,7 @@ class CryptoTransactionGenerator(BaseDataGenerator):
         ]
     
     
-    def generate(self, n=10):  # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value):  # type: ignore
         # add a new crypto address provider
         self.fake.add_provider(CryptoAddress)
         return [
@@ -114,9 +114,9 @@ class CryptoTransactionGenerator(BaseDataGenerator):
 
 
 
-def generate_cryptos_transactions_data(length=10):
+def generate_cryptos_transactions_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return CryptoTransactionGenerator().generate(n=length)
 
 
-def generate_cryptos_data(length=10):
+def generate_cryptos_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return CryptoGenerator().generate(n=length)

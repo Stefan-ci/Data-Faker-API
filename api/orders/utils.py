@@ -1,7 +1,7 @@
 from random import randint, choice
-from utils.base import BaseDataGenerator
 from datetime import datetime, timedelta
 from api.products.utils import ProductGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class OrderGenerator(BaseDataGenerator):
@@ -17,7 +17,7 @@ class OrderGenerator(BaseDataGenerator):
         }
     
     
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         products = ProductGenerator().generate(n=n)
         
         orders = []
@@ -47,7 +47,7 @@ class OrderGenerator(BaseDataGenerator):
 
 
 class OrderItemGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         order_items = []
         for index, product in enumerate(ProductGenerator().generate(n=n), start=1):
             quantity = randint(1, 5)
@@ -65,9 +65,9 @@ class OrderItemGenerator(BaseDataGenerator):
 
 
 
-def generate_orders_data(length=10):
+def generate_orders_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return OrderGenerator().generate(n=length)
 
 
-def generate_order_items_data(length=10):
+def generate_order_items_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return OrderItemGenerator().generate(n=length)

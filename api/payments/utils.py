@@ -1,8 +1,8 @@
-from utils.base import BaseDataGenerator
+from utils.base import BaseDataGenerator, Constants
 
 
 class PaymentGenerator(BaseDataGenerator):
-    def generate(self, n=10): # type: ignore
+    def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
         methods = ["Cash", "Credit Card", "Debit Card", "Bank Transfer", "PayPal", "Cryptocurrency", "Mobile Payment"]
         statuses = ["Pending", "Completed", "Failed", "Refunded"]
         
@@ -20,5 +20,5 @@ class PaymentGenerator(BaseDataGenerator):
         ]
 
 
-def generate_payments_data(length=10):
+def generate_payments_data(length=Constants.DATA_GENERATION_LENGTH.value):
     return PaymentGenerator().generate(n=length)
