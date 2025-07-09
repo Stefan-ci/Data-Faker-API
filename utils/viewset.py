@@ -1,5 +1,6 @@
+from uuid import UUID
 from abc import ABC, abstractmethod
-from typing import Type, Optional, Callable, Any
+from typing import Type, Optional, Callable, Any, Union
 from utils.base import StateKeywords, AppStateAccessor, Endpoints
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 from fastapi import APIRouter, Query, Depends, Request, HTTPException, status
@@ -25,6 +26,7 @@ class BaseModelViewSet(ABC):
         # inject filters here and use them in as dependecies
         # that way, parameters (query params) will be defined automatically. No need to define them manually
         self.specific_filter_dependency = self.model._create_filter_dependency_for_model()
+        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
         self.router.add_api_route(
             "/",
             self.list_view,
@@ -43,7 +45,6 @@ class BaseModelViewSet(ABC):
             summary=f"Retrieve single {self.verbose_name.lower()}",
             name=self.endpoint_data.detail_route_name
         )
-        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
     
     
     
@@ -104,7 +105,24 @@ class BaseModelViewSet(ABC):
     def get_item_by_id_or_uuid(self, data: list, id_or_uuid: str) -> Optional[dict]:
         return next((item for item in data if str(item.get("id")) == id_or_uuid or str(item.get("uuid")) == id_or_uuid), None)
     
-    
+    def validate_id_or_uuid(self, id_or_uuid: str) -> bool:
+        """
+        FastAPI treats the next string after the provided endpoint as `id_or_uuid`.
+        For example: GET http://localhost:9000/users/regenerate will throw back a 404 error on the object.
+        To fix it, let's check if the string is a digit or a UUID instance. Else, it should be treated like an endpoint.
+        """
+        
+        # validate ID
+        if id_or_uuid.isdigit():
+            return True
+        
+        # validate UUID
+        try:
+            return id_or_uuid == UUID(id_or_uuid)
+        except ValueError as e:
+            return False
+        except Exception as e:
+            return False
     
     
     async def list_view(self, request: Request, page_size: Optional[int] = Query(50, ge=1), page: Optional[int] = Query(1, ge=1),):
@@ -126,7 +144,13 @@ class BaseModelViewSet(ABC):
         )
     
     
-    async def retrieve_view(self, id_or_uuid: str, request: Request):
+    async def retrieve_view(self, id_or_uuid: Union[int, UUID, str], request: Request):
+        id_or_uuid_str = str(id_or_uuid)
+        
+        # validate the provided id_or_uuid
+        if not self.validate_id_or_uuid(id_or_uuid=id_or_uuid_str):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"URL not found on this server")
+        
         try:
             all_data = self.get_all_data(request=request)
         except AttributeError as e:
@@ -135,7 +159,7 @@ class BaseModelViewSet(ABC):
         except Exception as e:
             return None, HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Error while retrieving '{self.verbose_name.capitalize()}': {e}.")
         
-        item = self.get_item_by_id_or_uuid(all_data, id_or_uuid)
+        item = self.get_item_by_id_or_uuid(all_data, id_or_uuid_str)
         if not item:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
         
