@@ -9,9 +9,7 @@ from fastapi.templating import Jinja2Templates
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
 templates = Jinja2Templates(directory="templates")
-router.mount("/static", StaticFiles(directory="static"), name="static")
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def homepage_view(request: Request):
