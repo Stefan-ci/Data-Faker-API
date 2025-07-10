@@ -13,7 +13,7 @@ The API supports dynamic data generation with customizable parameters (like the 
 * **Orders API**: Manage fake orders composed of products with quantities and totals.
 * An much more (e.g., **cryptos**, **expenses**, **incomes**, etc.).
 * **Locale Support**: Generate localized data by specifying a language code (e.g., `en_US`, `fr_FR`, `it_IT`). The `locale` query parameter or the `Accept-Language` HTTP header can be used. The default locale is `en_US`.
-* **On-demand Regeneration**: Dedicated API endpoints (`/regenerate`) allow dynamic refreshing of data sets.
+* **On-demand Regeneration**: Dedicated API endpoints (`/regenerate` with `?length=integer`) allow dynamic refreshing of data sets.
 * **Efficient State Management**: Generated data is temporarily stored in the application's in-memory state for quick access and reuse.
 * **Filtering and Pagination**: Most list endpoints support query parameters for filtering (`?field=value`) and pagination (`?page=1&page_size=50`).
 
@@ -37,10 +37,10 @@ The API is accessible via standard HTTP requests.
     ```
 * **Regenerate all user data (requires a POST request):**
     ```bash
-    POST /users/regenerate
+    POST /users/regenerate?length=500
     ```
 
-Interactive API documentation (Swagger UI) is available at `http://localhost:8000/docs` once the application is running.
+Interactive API documentation (Swagger UI & ReDoc) is available at `http://localhost:8000/docs` or `http://localhost:8000/redoc`once the application is running.
 
 ## Limitations
 
@@ -60,7 +60,7 @@ To set up and run the project locally:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/Stefan-ci/Data-Faker-API](https://github.com/Stefan-ci/Data-Faker-API)
+    git clone https://github.com/Stefan-ci/Data-Faker-API
     cd Data-Faker-API
     ```
 

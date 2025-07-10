@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from utils.base import Endpoints
 from fastapi import APIRouter, Request
@@ -5,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -20,6 +22,7 @@ async def homepage_view(request: Request):
         try:
             absolute_url = request.url_for(endpoint_enum.route_name)
         except Exception as e:
+            logger.warning(f"Can't find the absolute URI for the endpoint: {endpoint_enum.endpoint}. Error: {e}")
             absolute_url = f"{base_url_str}{endpoint_enum.endpoint}"
         
         available_endpoints.append({

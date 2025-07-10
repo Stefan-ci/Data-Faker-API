@@ -1,9 +1,13 @@
+import logging
 from uuid import UUID
 from abc import ABC, abstractmethod
 from typing import Type, Optional, Callable, Any, Union
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 from utils.base import StateKeywords, AppStateAccessor, Endpoints, Constants
 from fastapi import APIRouter, Query, Depends, Request, HTTPException, status
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseModelViewSet(ABC):
@@ -120,8 +124,10 @@ class BaseModelViewSet(ABC):
         try:
             return id_or_uuid == UUID(id_or_uuid)
         except ValueError as e:
+            logger.error(f"Invalid id_or_uuid (ValueError): {e}")
             return False
         except Exception as e:
+            logger.error(f"Invalid id_or_uuid: {e}")
             return False
     
     
@@ -157,6 +163,7 @@ class BaseModelViewSet(ABC):
             self.regenerate_func(request=request, length=Constants.PAGINATE_BY.value) # regenerate data
             all_data = self.get_all_data(request=request) # re-get data
         except Exception as e:
+            logger.error(f"Can't retrieve {self.verbose_name.lower()} data. Error: {e}")
             return None, HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Error while retrieving '{self.verbose_name.capitalize()}': {e}.")
         
         item = self.get_item_by_id_or_uuid(all_data, id_or_uuid_str)
