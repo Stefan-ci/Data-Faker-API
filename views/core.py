@@ -42,7 +42,7 @@ async def homepage_view(request: Request):
 
 
 
-@router.get("/all-endpoints", response_class=HTMLResponse, include_in_schema=False)
+@router.get("/all-endpoints", response_class=HTMLResponse, include_in_schema=False, name="json-list-all-endpoints")
 async def all_endpoints_view(request: Request):
     available_endpoints: List[str] = []
     base_url_str = str(request.base_url).rstrip('/')
