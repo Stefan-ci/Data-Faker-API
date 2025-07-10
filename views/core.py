@@ -1,10 +1,10 @@
 import logging
+from typing import List
 from datetime import datetime
 from utils.base import Endpoints
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, JSONResponse
 
 logger = logging.getLogger(__name__)
 
@@ -38,3 +38,21 @@ async def homepage_view(request: Request):
         "github_repo_url": "https://github.com/Stefan-ci/Data-Faker-API",
     }
     return templates.TemplateResponse(name="home.html", context=context)
+
+
+
+
+@router.get("/all-endpoints", response_class=HTMLResponse, include_in_schema=False)
+async def all_endpoints_view(request: Request):
+    available_endpoints: List[str] = []
+    base_url_str = str(request.base_url).rstrip('/')
+    
+    for endpoint_enum in Endpoints:
+        try:
+            absolute_url = request.url_for(endpoint_enum.route_name)
+        except Exception as e:
+            logger.warning(f"Can't find the absolute URI for the endpoint: {endpoint_enum.endpoint}. Error: {e}")
+            absolute_url = f"{base_url_str}{endpoint_enum.endpoint}"
+        
+        available_endpoints.append(str(absolute_url))
+    return JSONResponse(content=available_endpoints)

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 # template views
-from views.homepage import router as homepage_router
+from views.core import router as core_views_router
 
 # API views
 from api.users.views import UserApiView
@@ -38,9 +38,10 @@ app = FastAPI(
     swagger_ui_parameters={"defaultModelsExpandDepth": 0}, # Collapse schema section in the docs (too long)
 )
 
-# Include API routes
-app.include_router(homepage_router)
+# Core routes
+app.include_router(core_views_router)
 
+# Include API routes
 app.include_router(UserApiView().router)
 app.include_router(TodoApiView().router)
 app.include_router(ChatApiView().router)

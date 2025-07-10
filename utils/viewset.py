@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class BaseModelViewSet(ABC):
-    """ Base class for creating model view sets in FastAPI.
+    """
+    Base class for creating model view sets in FastAPI.
     This class provides a structure for creating base operations for a given model
     """
     model: Type[CustomBaseModel]
