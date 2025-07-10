@@ -2,65 +2,85 @@
 
 ## Overview
 
-This project is a FastAPI-based RESTful API designed to provide fake/generated data for various entities such as users, products, orders, and more. It leverages the [Faker](https://faker.readthedocs.io/en/stable/) library to generate realistic dummy data, which is useful for testing, prototyping, or demo purposes.
+This project is a FastAPI-based RESTful API designed to provide fake/generated data for various entities such as users, products, orders, and more. It leverages the [Faker](https://faker.readthedocs.io/en/stable/) library to generate realistic dummy data, which is highly useful for testing, prototyping, or demonstration purposes.
 
-The API supports dynamic data generation with customizable parameters such as the number of items to generate and filtering options. Additionally, it incorporates locale settings to generate data in different languages and regional formats.
+The API supports dynamic data generation with customizable parameters (like the number of items) and filtering options. Additionally, it incorporates locale settings to generate data in different languages and regional formats.
 
-## Features
+## Key Features
 
-- **Users API**: Retrieve lists of fake users with details like name, email, address, and more.
-- **Products API**: Generate fake products with attributes including name, category, price, stock, vendor, and images.
-- **Orders API**: Manage fake orders composed of products with quantities and totals.
-- **Locale Support**: Generate localized data based on user-specified language codes (e.g., `en_US`, `fr_FR`, `it_IT`).
-- **On-demand Regeneration**: Endpoints to regenerate data sets dynamically.
-- **State Management**: Uses application state to cache and reuse generated data efficiently.
+* **Users API**: Retrieve lists of fake users with details like name, email, address, and more.
+* **Products API**: Generate fake products with attributes including name, category, price, stock, vendor, and images.
+* **Orders API**: Manage fake orders composed of products with quantities and totals.
+* An much more (e.g., **cryptos**, **expenses**, **incomes**, etc.).
+* **Locale Support**: Generate localized data by specifying a language code (e.g., `en_US`, `fr_FR`, `it_IT`). The `locale` query parameter or the `Accept-Language` HTTP header can be used. The default locale is `en_US`.
+* **On-demand Regeneration**: Dedicated API endpoints (`/regenerate`) allow dynamic refreshing of data sets.
+* **Efficient State Management**: Generated data is temporarily stored in the application's in-memory state for quick access and reuse.
+* **Filtering and Pagination**: Most list endpoints support query parameters for filtering (`?field=value`) and pagination (`?page=1&page_size=50`).
 
 ## Usage
 
-- **Locale Selection**  
-    The API allows selecting a locale via a query parameter (`locale`) or by sending the `Accept-Language` HTTP header. If no locale is specified, it defaults to `en_US`.  
-    Example:
+The API is accessible via standard HTTP requests.
+
+**Examples:**
+
+* **List users in French:**
     ```bash
     GET /users/?locale=fr_FR
     ```
+* **List 10 products:**
+    ```bash
+    GET /products/?length=10
+    ```
+* **List users filtered by city (example):**
+    ```bash
+    GET /users/?city=Paris
+    ```
+* **Regenerate all user data (requires a POST request):**
+    ```bash
+    POST /users/regenerate
+    ```
 
-
-- **Data Generation Parameters**  
-Most endpoints support query parameters to control the number of items generated (`length`) and filtering criteria (e.g., filter users by city).
+Interactive API documentation (Swagger UI) is available at `http://localhost:8000/docs` once the application is running.
 
 ## Limitations
 
-- **Partial Multi-locale Support**  
-Although the API accepts locale parameters and attempts to generate localized data, it does **not** fully support multi-locale scenarios.  
-Specifically, the underlying Faker library's multi-locale mode is known to raise `NotImplementedError` on certain method calls, as some Faker providers do not yet implement full multi-locale compatibility.  
-As a result, passing multiple locales or expecting seamless multi-locale fallback behavior **is not operational** and can cause runtime errors.  
-For stable operation, only single-locale strings (e.g., `"en_US"`) should be used.
+* **Locale Support: Single Mode Only**
+    The API is designed to generate data for a **single locale** at a time. While the `locale` parameter is supported, using multiple locales simultaneously or expecting multi-locale "fallback" behavior (where Faker would try different locales) is **not functional** and may lead to `NotImplementedError` due to limitations in certain Faker providers regarding multi-locale compatibility.
+    Always use a **single locale string** (e.g., `"fr_FR"`, `"en_US"`) for stable operation (if locale support is enabled).
 
-- **No Persistent Storage**  
-Data generated is stored temporarily in application state and will reset on application restart. There is no database or persistent storage integration.
+* **No Persistent Storage**
+    All generated data is stored in memory within the application state. It will be **reset upon each application restart**. There is no integration with a database or other persistent storage mechanism.
 
-- **Limited Image Support**  
-Product images are generated via stable URLs to placeholder image services (e.g., Unsplash). No local image files are stored or served.
+* **Limited Image Support**
+    Product images are generated via stable URLs from placeholder image services (e.g., Unsplash, Lorem Picsum). The API does not store or serve image files.
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone THE_CURRENT_REPO_URL_HERE && cd DIRECTORY_ALSO_NAME_HERE
-```
+To set up and run the project locally:
 
-2. Install dependencies:
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/Stefan-ci/Data-Faker-API](https://github.com/Stefan-ci/Data-Faker-API)
+    cd Data-Faker-API
+    ```
 
-Create you virtual environment, activate it and install dependencies:
-```bash
-pip install -r requirements.txt
-```
+2.  **Install dependencies:**
+    Create and activate a virtual environment, then install the necessary dependencies:
+    ```bash
+    python -m venv venv
+    # On Windows:
+    # venv\Scripts\activate
+    # On macOS/Linux:
+    # source venv/bin/activate
+    pip install -r requirements.txt
+    ```
 
-3. Run the application:
-```bash
-uvicorn main:app --reload
-```
+3.  **Run the application:**
+    ```bash
+    uvicorn main:app --reload
+    ```
+    The API will be accessible at `http://localhost:8000`. The `--reload` flag allows for automatic code changes detection. You may also specify the port with `--port PORT_NUMBER_HERE`.
 
 ## Contributing
 
-Contributions are welcome! Please open issues or submit pull requests for bug fixes and feature improvements. Please follow conventional coding practices and document your changes clearly.
+Contributions are welcome! Please feel free to open issues for bug reports or feature suggestions, or submit pull requests. Kindly adhere to conventional coding practices and document your changes clearly.
