@@ -1,5 +1,9 @@
 from fastapi import FastAPI
+from typing import List, Type
 from contextlib import asynccontextmanager
+
+# utils
+from utils.viewset import BaseModelViewSet
 
 # template views
 from views.core import router as core_views_router
@@ -24,8 +28,22 @@ from api.cryptos.views import CryptoApiView, CryptoTransactionApiView
 
 @asynccontextmanager
 async def on_startup(app: FastAPI):
-    # init some data here if you want to.
-    # I just want to keep the main file very simple
+    # register core routes
+    app.include_router(core_views_router)
+    
+    # register API routes
+    api_view_set_classes: List[Type[BaseModelViewSet]] = [
+        UserApiView, TodoApiView, ChatApiView, ProductApiView, ExpenseApiView, PaymentApiView, OrderApiView,
+        CryptoApiView, IncomeApiView, EmployeeApiView, AnalyticApiView, FeedbackApiView, OrderItemApiView,
+        AttendanceApiView, MedicalDataApiView, CryptoTransactionApiView, NotificationApiView
+    ]
+    
+    for ViewSetClass in api_view_set_classes:
+        view_set_instance = ViewSetClass()
+        app.include_router(view_set_instance.router)
+    
+    
+    # do what you want here
     yield
 
 
@@ -37,25 +55,3 @@ app = FastAPI(
     debug=True,
     swagger_ui_parameters={"defaultModelsExpandDepth": -1}, # Collapse or remove schema section in the docs (too long)
 )
-
-# Core routes
-app.include_router(core_views_router)
-
-# Include API routes
-app.include_router(UserApiView().router)
-app.include_router(TodoApiView().router)
-app.include_router(ChatApiView().router)
-app.include_router(OrderApiView().router)
-app.include_router(CryptoApiView().router)
-app.include_router(IncomeApiView().router)
-app.include_router(ProductApiView().router)
-app.include_router(ExpenseApiView().router)
-app.include_router(PaymentApiView().router)
-app.include_router(EmployeeApiView().router)
-app.include_router(AnalyticApiView().router)
-app.include_router(FeedbackApiView().router)
-app.include_router(OrderItemApiView().router)
-app.include_router(AttendanceApiView().router)
-app.include_router(MedicalDataApiView().router)
-app.include_router(NotificationApiView().router)
-app.include_router(CryptoTransactionApiView().router)
