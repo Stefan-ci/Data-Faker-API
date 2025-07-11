@@ -35,7 +35,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=on_startup,
     debug=True,
-    swagger_ui_parameters={"defaultModelsExpandDepth": 0}, # Collapse schema section in the docs (too long)
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1}, # Collapse or remove schema section in the docs (too long)
 )
 
 # Core routes
