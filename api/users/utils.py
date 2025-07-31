@@ -44,14 +44,17 @@ class UserGenerator(BaseDataGenerator):
     pass_manager = PasswordManager(salt=None)
     
     def generate(self, n=Constants.DATA_GENERATION_LENGTH.value): # type: ignore
-        return [
-            {
+        data = []
+        for i in range(1, n + 1):
+            username = self.fake.user_name()
+            
+            data.append({
                 "id": i,
                 "uuid": self.fake.uuid4(),
                 "first_name": self.fake.first_name(),
                 "last_name": self.fake.last_name(),
                 "email": self.fake.email(),
-                "username": self.fake.user_name(),
+                "username": username,
                 "phone_number": self.fake.phone_number(),
                 "birth_date": self.fake.date_of_birth(minimum_age=0, maximum_age=90).isoformat(),
                 "sex": self.fake.random_element([sex.value for sex in SexChoices]),
@@ -64,10 +67,9 @@ class UserGenerator(BaseDataGenerator):
                 "is_active": self.fake.boolean(),
                 "is_staff": self.fake.boolean(),
                 "is_superuser": self.fake.boolean(),
-                "password": self.pass_manager.hash_password(password=self.fake.word())
-            }
-            for i in range(1, n + 1)
-        ]
+                "password": self.pass_manager.hash_password(password=username)
+            })
+        return data
 
 
 def generate_users_data(length=Constants.DATA_GENERATION_LENGTH.value):
