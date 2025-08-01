@@ -33,9 +33,12 @@ class PasswordManager:
     
     def verify_password(self, stored_password, password):
         stored_bytes = binascii.unhexlify(stored_password)
+        salt = stored_bytes[:16]
         old_key = stored_bytes[16:]
-        # recompute the key with the provided password
-        new_key = self.get_hash_key(password=password)
+        
+        temp_manager = PasswordManager(salt=salt)
+        new_key = temp_manager.get_hash_key(password)
+        
         return old_key == new_key
 
 
