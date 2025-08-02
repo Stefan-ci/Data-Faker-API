@@ -27,7 +27,7 @@ class ProductGenerator(BaseDataGenerator):
         Return a stable product image URL, with fallback to local image.
         """
         # no HTTP request to send. So no need to test if it exists or not
-        return f"https://source.unsplash.com/400x400/?product&sig={index}"
+        return f"https://picsum.photos/seed/product{index}/400/400"
 
 
 
