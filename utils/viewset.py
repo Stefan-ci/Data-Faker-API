@@ -1,11 +1,12 @@
 import logging
 from uuid import UUID, uuid4
+from pydantic import BaseModel
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, create_model
 from typing import Type, Optional, Callable, Any, Union
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 from utils.base import StateKeywords, AppStateAccessor, Endpoints, Constants
 from fastapi import APIRouter, Query, Depends, Request, HTTPException, status, Body
+
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class BaseModelViewSet(ABC):
         # Create input model for POST requests (exclude id and uuid)
         self.create_model = self._create_input_model()
         
-        self.router.add_api_route("/regenerate/", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
+        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
         self.router.add_api_route(
             "/",
             self.list_view,
@@ -64,6 +65,26 @@ class BaseModelViewSet(ABC):
             summary=f"Retrieve single {self.verbose_name.lower()}",
             name=self.endpoint_data.detail_route_name
         )
+        
+        # Add PUT route for full update
+        self.router.add_api_route(
+            "/{id_or_uuid}/",
+            self.update_view,
+            response_model=self.model,
+            methods=["PUT"],
+            summary=f"Update {self.verbose_name.lower()} (full update)",
+            name=f"{self.endpoint_data.detail_route_name}_update"
+        )
+        
+        # Add PATCH route for partial update
+        self.router.add_api_route(
+            "/{id_or_uuid}/",
+            self.partial_update_view,
+            response_model=self.model,
+            methods=["PATCH"],
+            summary=f"Partially update {self.verbose_name.lower()}",
+            name=f"{self.endpoint_data.detail_route_name}_partial_update"
+        )
     
     
     def _create_input_model(self) -> Type[BaseModel]:
@@ -77,13 +98,23 @@ class BaseModelViewSet(ABC):
         model_fields.pop('uuid', None)
         
         # Create new model class for input
-        
+        from pydantic import create_model
         input_model = create_model(
             f"{self.model.__name__}Create",
             **{name: (field.annotation, field) for name, field in model_fields.items()} # type: ignore
         ) # type: ignore
         
         return input_model
+    
+    
+    def _clean_input_data(self, data: dict) -> dict:
+        """
+        Remove 'id' and 'uuid' from input data, even if provided by the frontend
+        """
+        cleaned_data = data.copy()
+        cleaned_data.pop('id', None)
+        cleaned_data.pop('uuid', None)
+        return cleaned_data
     
     
     @abstractmethod
@@ -203,12 +234,18 @@ class BaseModelViewSet(ABC):
         Create a new item with auto-generated ID and UUID
         """
         try:
+            # Clean input data to remove id and uuid if provided
+            cleaned_data = self._clean_input_data(data)
+            
+            # Get or initialize data in state
+            accessor = self.get_accessor(request)
+            
             # Ensure the state key exists
-            if not self.get_accessor(request).exists(self.state_key):
-                self.get_accessor(request).set(self.state_key, [])
+            if not accessor.exists(self.state_key):
+                accessor.set(self.state_key, [])
             
             # Get current data
-            current_data = self.get_all_data(request)
+            current_data = accessor.get(self.state_key)
             
             # Generate new ID and UUID
             new_id = self.get_next_id(request)
@@ -218,24 +255,22 @@ class BaseModelViewSet(ABC):
             new_item = {
                 "id": new_id,
                 "uuid": new_uuid,
-                **data  # Add all the fields from the request body
+                **cleaned_data  # Add all the cleaned fields from the request body
             }
             
             # Validate the new item with the model
             validated_item = self.model.model_validate(new_item)
             
             # Add to the data list
-            if not isinstance(current_data, list):
-                current_data = list(current_data)
-            
             current_data.append(validated_item.model_dump())
             
             # Update state
-            self.get_accessor(request).set(key=self.state_key, value=current_data)
+            accessor.set(self.state_key, current_data)
             
             logger.info(f"Created new {self.verbose_name.lower()} with ID: {new_id} and UUID: {new_uuid}")
+            
             return validated_item
-        
+            
         except Exception as e:
             logger.error(f"Error creating {self.verbose_name.lower()}: {e}")
             raise HTTPException(
@@ -244,6 +279,131 @@ class BaseModelViewSet(ABC):
             )
     
     
+    async def update_view(self, id_or_uuid: Union[int, UUID, str], request: Request, data: dict = Body(...)):
+        """
+        Full update (PUT) - replaces all fields except id and uuid
+        """
+        try:
+            id_or_uuid_str = str(id_or_uuid)
+            
+            # Validate the provided id_or_uuid
+            if not self.validate_id_or_uuid(id_or_uuid=id_or_uuid_str):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"URL not found on this server")
+            
+            # Clean input data to remove id and uuid if provided
+            cleaned_data = self._clean_input_data(data)
+            
+            # Get current data
+            accessor = self.get_accessor(request)
+            current_data = accessor.get(self.state_key)
+            
+            if not current_data:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
+            
+            # Find the item to update
+            item_index = None
+            original_item = {}
+            
+            for i, item in enumerate(current_data):
+                if str(item.get("id")) == id_or_uuid_str or str(item.get("uuid")) == id_or_uuid_str:
+                    item_index = i
+                    original_item = item
+                    break
+            
+            if item_index is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
+            
+            # Create updated item (keep original id and uuid)
+            updated_item = {
+                "id": original_item["id"],
+                "uuid": original_item["uuid"],
+                **cleaned_data  # Replace all other fields
+            }
+            
+            # Validate the updated item
+            validated_item = self.model.model_validate(updated_item)
+            
+            # Update in the data list
+            current_data[item_index] = validated_item.model_dump()
+            
+            # Update state
+            accessor.set(self.state_key, current_data)
+            
+            logger.info(f"Updated {self.verbose_name.lower()} with ID/UUID: {id_or_uuid_str}")
+            
+            return validated_item
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error updating {self.verbose_name.lower()}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Error updating {self.verbose_name.lower()}: {str(e)}"
+            )
+    
+    
+    async def partial_update_view(self, id_or_uuid: Union[int, UUID, str], request: Request, data: dict = Body(...)):
+        """
+        Partial update (PATCH) - updates only provided fields, keeps others unchanged
+        """
+        try:
+            id_or_uuid_str = str(id_or_uuid)
+            
+            # Validate the provided id_or_uuid
+            if not self.validate_id_or_uuid(id_or_uuid=id_or_uuid_str):
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"URL not found on this server")
+            
+            # Clean input data to remove id and uuid if provided
+            cleaned_data = self._clean_input_data(data)
+            
+            # Get current data
+            accessor = self.get_accessor(request)
+            current_data = accessor.get(self.state_key)
+            
+            if not current_data:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
+            
+            # Find the item to update
+            item_index = None
+            original_item = {}
+            
+            for i, item in enumerate(current_data):
+                if str(item.get("id")) == id_or_uuid_str or str(item.get("uuid")) == id_or_uuid_str:
+                    item_index = i
+                    original_item = item.copy()
+                    break
+            
+            if item_index is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{self.verbose_name.capitalize()} not found.")
+            
+            # Update only the provided fields (keep original id, uuid, and non-provided fields)
+            updated_item = original_item.copy()
+            updated_item.update(cleaned_data)  # Only update provided fields
+            
+            # Validate the updated item
+            validated_item = self.model.model_validate(updated_item)
+            
+            # Update in the data list
+            current_data[item_index] = validated_item.model_dump()
+            
+            # Update state
+            accessor.set(self.state_key, current_data)
+            
+            logger.info(f"Partially updated {self.verbose_name.lower()} with ID/UUID: {id_or_uuid_str}")
+            
+            return validated_item
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error partially updating {self.verbose_name.lower()}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Error partially updating {self.verbose_name.lower()}: {str(e)}"
+            )
+
+
     async def retrieve_view(self, id_or_uuid: Union[int, UUID, str], request: Request):
         id_or_uuid_str = str(id_or_uuid)
         
