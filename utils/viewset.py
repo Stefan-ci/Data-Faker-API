@@ -1,11 +1,11 @@
 import logging
-from uuid import UUID
+from uuid import UUID, uuid4
 from abc import ABC, abstractmethod
+from pydantic import BaseModel, create_model
 from typing import Type, Optional, Callable, Any, Union
 from utils.base import CustomBaseModel, CustomPaginationBaseModel
 from utils.base import StateKeywords, AppStateAccessor, Endpoints, Constants
-from fastapi import APIRouter, Query, Depends, Request, HTTPException, status
-
+from fastapi import APIRouter, Query, Depends, Request, HTTPException, status, Body
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,11 @@ class BaseModelViewSet(ABC):
         # inject filters here and use them in as dependecies
         # that way, parameters (query params) will be defined automatically. No need to define them manually
         self.specific_filter_dependency = self.model._create_filter_dependency_for_model()
-        self.router.add_api_route("/regenerate", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
+        
+        # Create input model for POST requests (exclude id and uuid)
+        self.create_model = self._create_input_model()
+        
+        self.router.add_api_route("/regenerate/", self.regenerate_view, methods=["POST"], summary=f"Regenerate {self.verbose_name_plural.lower()}")
         self.router.add_api_route(
             "/",
             self.list_view,
@@ -42,8 +46,18 @@ class BaseModelViewSet(ABC):
             name=self.endpoint_data.route_name
         )
         
+        # Add POST route for creating new items
         self.router.add_api_route(
-            "/{id_or_uuid}",
+            "/",
+            self.create_view,
+            response_model=self.model,
+            methods=["POST"],
+            summary=f"Create new {self.verbose_name.lower()}",
+            name=f"{self.endpoint_data.route_name}_create"
+        )
+        
+        self.router.add_api_route(
+            "/{id_or_uuid}/",
             self.retrieve_view,
             response_model=self.model,
             methods=["GET"],
@@ -51,6 +65,25 @@ class BaseModelViewSet(ABC):
             name=self.endpoint_data.detail_route_name
         )
     
+    
+    def _create_input_model(self) -> Type[BaseModel]:
+        """
+        Create a Pydantic model for input data that excludes 'id' and 'uuid' fields
+        """
+        model_fields = self.model.model_fields.copy()
+        
+        # Remove id and uuid from the input model
+        model_fields.pop('id', None)
+        model_fields.pop('uuid', None)
+        
+        # Create new model class for input
+        
+        input_model = create_model(
+            f"{self.model.__name__}Create",
+            **{name: (field.annotation, field) for name, field in model_fields.items()} # type: ignore
+        ) # type: ignore
+        
+        return input_model
     
     
     @abstractmethod
@@ -62,13 +95,27 @@ class BaseModelViewSet(ABC):
         pass
     
     
+    def get_next_id(self, request: Request) -> int:
+        """
+        Generate the next available ID based on existing data
+        """
+        try:
+            all_data = self.get_all_data(request)
+            if not all_data:
+                return 1
+            
+            # Find the maximum ID in existing data
+            max_id = max(item.get('id', 0) for item in all_data)
+            return max_id + 1
+        except:
+            return 1
+    
     
     def get_accessor(self, request: Request):
         return AppStateAccessor(request.app.state)
     
     def get_all_data(self, request: Request):
         return self.get_accessor(request).get(self.state_key)
-    
     
     
     def search_data(self, request: Request, length: int, filters: Optional[dict] = None) -> list:
@@ -123,7 +170,7 @@ class BaseModelViewSet(ABC):
         
         # validate UUID
         try:
-            return id_or_uuid == UUID(id_or_uuid)
+            return str(UUID(id_or_uuid)) == id_or_uuid
         except ValueError as e:
             logger.error(f"Invalid id_or_uuid (ValueError): {e}")
             return False
@@ -149,6 +196,52 @@ class BaseModelViewSet(ABC):
             total_obj=all_data_length,
             results=self.paginate_items(page=page, page_size=page_size, data=data),
         )
+    
+    
+    async def create_view(self, request: Request, data: dict = Body(...)):
+        """
+        Create a new item with auto-generated ID and UUID
+        """
+        try:
+            # Ensure the state key exists
+            if not self.get_accessor(request).exists(self.state_key):
+                self.get_accessor(request).set(self.state_key, [])
+            
+            # Get current data
+            current_data = self.get_all_data(request)
+            
+            # Generate new ID and UUID
+            new_id = self.get_next_id(request)
+            new_uuid = str(uuid4())
+            
+            # Create the new item with generated ID and UUID
+            new_item = {
+                "id": new_id,
+                "uuid": new_uuid,
+                **data  # Add all the fields from the request body
+            }
+            
+            # Validate the new item with the model
+            validated_item = self.model.model_validate(new_item)
+            
+            # Add to the data list
+            if not isinstance(current_data, list):
+                current_data = list(current_data)
+            
+            current_data.append(validated_item.model_dump())
+            
+            # Update state
+            self.get_accessor(request).set(key=self.state_key, value=current_data)
+            
+            logger.info(f"Created new {self.verbose_name.lower()} with ID: {new_id} and UUID: {new_uuid}")
+            return validated_item
+        
+        except Exception as e:
+            logger.error(f"Error creating {self.verbose_name.lower()}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"Error creating {self.verbose_name.lower()}: {str(e)}"
+            )
     
     
     async def retrieve_view(self, id_or_uuid: Union[int, UUID, str], request: Request):
