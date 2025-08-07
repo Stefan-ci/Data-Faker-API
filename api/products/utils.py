@@ -14,7 +14,7 @@ class ProductGenerator(BaseDataGenerator):
                 "stock": self.fake.random_int(0, 500),
                 "vendor": self.fake.company(),
                 "picture": self._get_product_image_url(i),
-                "description": self.fake.sentence(nb_words=10),
+                "description": self.fake.sentence(nb_words=200),
                 "rating": round(self.fake.pyfloat(left_digits=1, right_digits=1, min_value=1, max_value=5), 1),
                 "reviews_count": self.fake.random_int(0, 1000),
                 "created_at": self.fake.date_time_this_year().isoformat(),
